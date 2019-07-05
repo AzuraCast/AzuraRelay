@@ -1,0 +1,34 @@
+parameters:
+    level: 2
+
+    paths:
+        - src
+
+    bootstrap: %rootDir%/../../../util/phpstan.php
+
+    doctrine:
+        repositoryClass: Azura\Doctrine\Repository
+
+    universalObjectCratesClasses:
+        - Azura\Session\NamespaceInterface
+        - Azura\View
+
+    ignoreErrors:
+        # Caused by Symfony Validator (perhaps wrongly) returning the interface.
+        - '#Cannot cast Symfony\\Component\\Validator\\ConstraintViolationListInterface to string.#'
+
+        # Doctrine custom repositories aren't handled by the Doctrine plugin yet.
+        # - '#Property .* does not accept Azura\\Doctrine\\Repository<.*>.#'
+
+        # Supervisor functions that do exist but aren't annotated properly in the connector lib.
+        - '#Call to an undefined method Supervisor\\Supervisor::reloadConfig().#'
+
+    dynamicConstantNames:
+        - APP_IS_COMMAND_LINE
+        - APP_INSIDE_DOCKER
+        - APP_TESTING_MODE
+        - APP_APPLICATION_ENV
+        - APP_IN_PRODUCTION
+
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon

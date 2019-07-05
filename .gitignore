@@ -1,0 +1,21 @@
+# Junk/cache files.
+*Thumbs.db
+tmp/cache/*---*
+*.DS_Store
+*.apdisk
+.vagrant
+.idea
+/ubuntu-*-console.log
+.phplint-cache
+
+# Local development files.
+/config/routes.dev.php
+/.env
+/azurarelay.env
+
+# Composer-generated content
+/vendor/
+
+# Docker files
+/docker-compose.yml
+/docker-compose.override.yml
