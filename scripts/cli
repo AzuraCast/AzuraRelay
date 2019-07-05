@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ `whoami` != 'azurarelay' ]; then
+    echo 'This script must be run as the "azurarelay" user. Rerunning...'
+    sudo -E -u azurarelay cli $@
+    exit 1
+fi
+
+cd /var/azurarelay/www
+php bin/console "$@"

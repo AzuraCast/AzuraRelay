@@ -29,6 +29,3 @@ parameters:
         - APP_TESTING_MODE
         - APP_APPLICATION_ENV
         - APP_IN_PRODUCTION
-
-includes:
-    - vendor/phpstan/phpstan-doctrine/extension.neon
