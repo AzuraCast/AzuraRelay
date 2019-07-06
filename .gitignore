@@ -10,7 +10,6 @@ tmp/cache/*---*
 
 # Local development files.
 /config/routes.dev.php
-/.env
 /azurarelay.env
 
 # Composer-generated content
