@@ -16,4 +16,4 @@ before_install:
 install:
   - cp azurarelay.sample.env azurarelay.env
 script:
-  - dc-testing run --rm --user="azurarelay" relay composer test
+  - docker-compose run --rm --user="azurarelay" relay composer test
