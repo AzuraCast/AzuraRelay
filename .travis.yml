@@ -15,5 +15,6 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 install:
   - cp azurarelay.sample.env azurarelay.env
+  - cp docker-compose.sample.yml docker-compose.yml
 script:
   - docker-compose run --rm --user="azurarelay" relay composer test
