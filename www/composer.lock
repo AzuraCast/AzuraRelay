@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/azuracore.git",
-                "reference": "451a70db25a8068814060bcf79ab2b60d9fde88a"
+                "reference": "bf4f29d5bfa70c4d06e9f5abd0f2074159d0837a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AzuraCast/azuracore/zipball/451a70db25a8068814060bcf79ab2b60d9fde88a",
-                "reference": "451a70db25a8068814060bcf79ab2b60d9fde88a",
+                "url": "https://api.github.com/repos/AzuraCast/azuracore/zipball/bf4f29d5bfa70c4d06e9f5abd0f2074159d0837a",
+                "reference": "bf4f29d5bfa70c4d06e9f5abd0f2074159d0837a",
                 "shasum": ""
             },
             "require": {
@@ -67,7 +67,7 @@
                 }
             ],
             "description": "A lightweight core application framework.",
-            "time": "2019-06-03T19:49:13+00:00"
+            "time": "2019-07-08T04:45:24+00:00"
         },
         {
             "name": "cakephp/chronos",

@@ -5,6 +5,13 @@ return function (\Azura\Container $di)
         $console->setName('AzuraRelay Command Line Utility');
     });
 
+    $di[\App\Service\AzuraCast::class] = function($di) {
+        return new \App\Service\AzuraCast(
+            $di[\GuzzleHttp\Client::class],
+            $di[\Monolog\Logger::class]
+        );
+    };
+
     // Controller groups
     $di->register(new \App\Provider\FrontendProvider);
 
