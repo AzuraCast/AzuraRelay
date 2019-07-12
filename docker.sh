@@ -116,11 +116,12 @@ install() {
     if [[ ! -f azurarelay.env ]]; then
         docker-compose up -d
         docker-compose run --rm --user="azurarelay" relay cli app:setup
-        docker cp azurarelay_relay:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
+        docker cp azurarelay_relay_1:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
         docker-compose down -v
     fi
 
     docker-compose up -d
+    docker-compose exec --user="azurarelay" relay cli app:update
     exit
 }
 

@@ -17,6 +17,26 @@ return function (\Azura\Container $di)
         );
     };
 
+    $di[\Supervisor\Supervisor::class] = function ($di) {
+        $guzzle_client = new \GuzzleHttp\Client();
+        $client = new \fXmlRpc\Client(
+            'http://127.0.0.1:9001/RPC2',
+            new \fXmlRpc\Transport\HttpAdapterTransport(
+                new \Http\Message\MessageFactory\GuzzleMessageFactory(),
+                new \Http\Adapter\Guzzle6\Client($guzzle_client)
+            )
+        );
+
+        $connector = new \Supervisor\Connector\XmlRpc($client);
+        $supervisor = new \Supervisor\Supervisor($connector);
+
+        if (!$supervisor->isConnected()) {
+            throw new \Azura\Exception(sprintf('Could not connect to supervisord.'));
+        }
+
+        return $supervisor;
+    };
+
     // Controller groups
     $di->register(new \App\Provider\FrontendProvider);
 

@@ -2,7 +2,6 @@ version: '2.2'
 
 services:
   relay:
-    container_name: azurarelay_relay
     image: azuracast/azurarelay:latest
     build:
       context: .

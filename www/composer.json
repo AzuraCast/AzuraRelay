@@ -9,7 +9,13 @@
 
     "azuracast/azuracore": "dev-master",
     "cakephp/chronos": "^1.2",
-    "azuracast/php-api-client": "dev-master"
+    "azuracast/php-api-client": "dev-master",
+    "lstrojny/fxmlrpc": "^0.14.0",
+    "supervisorphp/supervisor": "^3.0",
+    "php-http/guzzle6-adapter": "^1.1",
+    "php-http/message": "^1.4",
+    "php-http/socket-client": "^1.2",
+    "php-http/httplug": "^1.0"
   },
   "require-dev": {
     "phpstan/phpstan": "^0.11.1",

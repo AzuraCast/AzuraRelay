@@ -8,6 +8,7 @@ return function (\Azura\EventDispatcher $dispatcher)
     $dispatcher->addListener(Event\BuildConsoleCommands::NAME, function(Event\BuildConsoleCommands $event) {
         $event->getConsole()->addCommands([
             new Command\SetupCommand,
+            new Command\UpdateCommand,
         ]);
     }, 0);
 };
