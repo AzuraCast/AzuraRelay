@@ -108,12 +108,14 @@ install() {
 
     if [[ ! -f docker-compose.yml ]]; then
         echo "Retrieving default docker-compose.yml file..."
-        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraCast/master/docker-compose.sample.yml > docker-compose.yml
+        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker-compose.sample.yml > docker-compose.yml
     fi
 
     docker-compose pull
 
     if [[ ! -f azurarelay.env ]]; then
+        touch azurarelay.env
+
         docker-compose up -d
         docker-compose run --rm --user="azurarelay" relay cli app:setup
         docker cp azurarelay_relay_1:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
