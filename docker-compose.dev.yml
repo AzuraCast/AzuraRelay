@@ -2,12 +2,16 @@ version: '2.2'
 
 services:
   relay:
+    container_name: azurarelay_relay
     image: azuracast/azurarelay:latest
     build:
       context: .
     env_file: azurarelay.env
     volumes:
+      - letsencrypt:/etc/letsencrypt
       - ./www:/var/azurarelay/www
+      - tmp_data:/var/azurarelay/www_tmp
+      - station_data:/var/azurarelay/stations
     ports:
      - '10080:80'
      - '10443:443'
@@ -60,3 +64,8 @@ services:
      - '18470:8470'
      - '18480:8480'
      - '18490:8490'
+
+volumes:
+  letsencrypt: {}
+  station_data: {}
+  tmp_data: {}

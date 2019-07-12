@@ -16,14 +16,6 @@ $app = \Azura\App::create([
 
 $di = $app->getContainer();
 
-/** @var \Azura\Settings $settings */
-$settings = $di[\Azura\Settings::class];
-
-$helperSet = new \Symfony\Component\Console\Helper\HelperSet();
-$helperSet->set(new \Symfony\Component\Console\Helper\QuestionHelper, 'dialog');
-
-$cli = new \Azura\Console\Application('AzuraRelay CLI ('.$settings[\Azura\Settings::APP_ENV].')');
-$cli->setContainer($di);
-$cli->setHelperSet($helperSet);
-
+/** @var Azura\Console\Application $cli */
+$cli = $di[Azura\Console\Application::class];
 $cli->run();

@@ -103,12 +103,7 @@ install() {
 
     if [[ ! -f .env ]]; then
         echo "Writing default .env file..."
-        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraCast/master/.env > .env
-    fi
-
-    if [[ ! -f azuracast.env ]]; then
-        echo "Creating default AzuraCast settings file..."
-        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraCast/master/azuracast.sample.env > azuracast.env
+        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/.env > .env
     fi
 
     if [[ ! -f docker-compose.yml ]]; then
@@ -117,7 +112,14 @@ install() {
     fi
 
     docker-compose pull
-    docker-compose run --user="azuracast" --rm web azuracast_install
+
+    if [[ ! -f azurarelay.env ]]; then
+        docker-compose up -d
+        docker-compose run --rm --user="azurarelay" relay cli app:setup
+        docker cp azurarelay_relay:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
+        docker-compose down -v
+    fi
+
     docker-compose up -d
     exit
 }
@@ -135,23 +137,14 @@ update() {
         cp docker-compose.yml docker-compose.backup.yml
         echo "Your existing docker-compose.yml file has been backed up to docker-compose.backup.yml."
 
-        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraCast/master/docker-compose.sample.yml > docker-compose.yml
+        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker-compose.sample.yml > docker-compose.yml
         echo "New docker-compose.yml file loaded."
 
     fi
 
-    if [[ ! -f azuracast.env ]]; then
-
-        curl -L https://raw.githubusercontent.com/AzuraCast/AzuraCast/master/azuracast.sample.env > azuracast.env
-        echo "Default environment file loaded."
-        
-    fi
-
-    docker volume rm azuracast_www_data
-    docker volume rm azuracast_tmp_data
-
+    docker volume rm azurarelay_www_data
+    docker volume rm azurarelay_tmp_data
     docker-compose pull
-    docker-compose run --user="azuracast" --rm web azuracast_update
     docker-compose up -d
 
     docker rmi $(docker images | grep "none" | awk '/ / { print $3 }') 2> /dev/null
@@ -165,7 +158,7 @@ update() {
 # Usage: ./docker.sh update-self
 #
 update-self() {
-    curl -L https://raw.githubusercontent.com/AzuraCast/AzuraCast/master/docker.sh > docker.sh
+    curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker.sh > docker.sh
     chmod a+x docker.sh
 
     echo "New Docker utility script downloaded."
@@ -177,7 +170,7 @@ update-self() {
 # Usage: ./docker.sh cli [command]
 #
 cli() {
-    docker-compose run --user="azuracast" --rm web azuracast_cli $*
+    docker-compose run --user="azurarelay" --rm relay cli $*
     exit
 }
 
@@ -186,7 +179,7 @@ cli() {
 # Usage: ./docker.sh bash
 #
 bash() {
-    docker-compose exec --user="azuracast" web bash
+    docker-compose exec --user="azurarelay" relay bash
     exit
 }
 
@@ -195,8 +188,8 @@ bash() {
 # Run the full test suite.
 #
 dev-tests() {
-    docker-compose exec --user="azuracast" web composer phplint -- $*
-    docker-compose exec --user="azuracast" web composer phpstan -- $*
+    docker-compose exec --user="azurarelay" relay composer phplint -- $*
+    docker-compose exec --user="azurarelay" relay composer phpstan -- $*
     exit
 }
 
@@ -211,7 +204,7 @@ uninstall() {
         docker-compose rm -f
         docker volume prune -f
 
-        echo "All AzuraCast Docker containers and volumes were removed."
+        echo "All AzuraRelay Docker containers and volumes were removed."
         echo "To remove *all* Docker containers and volumes, run:"
         echo "  docker stop \$(docker ps -a -q)"
         echo "  docker rm \$(docker ps -a -q)"

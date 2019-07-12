@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3de04ee777b16d1d22e0f4ddf6f95ce2",
+    "content-hash": "abf1acb754c0fd93a56f61768630b610",
     "packages": [
         {
             "name": "azuracast/azuracore",
@@ -68,6 +68,55 @@
             ],
             "description": "A lightweight core application framework.",
             "time": "2019-07-08T04:45:24+00:00"
+        },
+        {
+            "name": "azuracast/php-api-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AzuraCast/php-api-client.git",
+                "reference": "85d999ced25c671e9ffc511a5cc9b3d4355add44"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AzuraCast/php-api-client/zipball/85d999ced25c671e9ffc511a5cc9b3d4355add44",
+                "reference": "85d999ced25c671e9ffc511a5cc9b3d4355add44",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^6.3",
+                "php": ">=7.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5",
+                "vlucas/phpdotenv": "^3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AzuraCast\\Api\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Vaalyn",
+                    "email": "vaalyndev@gmail.com"
+                }
+            ],
+            "description": "An API client library for the AzuraCast API",
+            "homepage": "https://github.com/AzuraCast/php-api-client",
+            "keywords": [
+                "api",
+                "azuracast",
+                "client"
+            ],
+            "time": "2019-07-11T18:01:04+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -453,16 +502,16 @@
         },
         {
             "name": "doctrine/data-fixtures",
-            "version": "v1.3.1",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/data-fixtures.git",
-                "reference": "3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a"
+                "reference": "09b16943b27f3d80d63988d100ff256148c2f78b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a",
-                "reference": "3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a",
+                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/09b16943b27f3d80d63988d100ff256148c2f78b",
+                "reference": "09b16943b27f3d80d63988d100ff256148c2f78b",
                 "shasum": ""
             },
             "require": {
@@ -509,7 +558,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2018-03-20T09:06:36+00:00"
+            "time": "2019-07-10T18:30:35+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -4048,16 +4097,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.11.9",
+            "version": "0.11.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "6771e622ad93f0aff16a100547811e1e50781acb"
+                "reference": "56b3eb2a371b60537fd20794e24af9e7e8ed4e30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/6771e622ad93f0aff16a100547811e1e50781acb",
-                "reference": "6771e622ad93f0aff16a100547811e1e50781acb",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/56b3eb2a371b60537fd20794e24af9e7e8ed4e30",
+                "reference": "56b3eb2a371b60537fd20794e24af9e7e8ed4e30",
                 "shasum": ""
             },
             "require": {
@@ -4119,7 +4168,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-07-03T21:25:16+00:00"
+            "time": "2019-07-08T06:55:18+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -4549,6 +4598,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "azuracast/azuracore": 20,
+        "azuracast/php-api-client": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": true,
