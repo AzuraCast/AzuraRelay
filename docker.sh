@@ -111,8 +111,6 @@ install() {
         curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker-compose.sample.yml > docker-compose.yml
     fi
 
-    docker-compose pull
-
     if [[ ! -f azurarelay.env ]]; then
         touch azurarelay.env
 
@@ -144,8 +142,7 @@ update() {
         echo "New docker-compose.yml file loaded."
 
     fi
-
-    docker volume rm azurarelay_www_data
+    
     docker volume rm azurarelay_tmp_data
     docker-compose pull
     docker-compose up -d

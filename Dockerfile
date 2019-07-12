@@ -101,7 +101,7 @@ RUN ln -s /etc/letsencrypt/selfsigned.key /etc/letsencrypt/ssl.key \
 
 # Clone repo and set up repo
 WORKDIR /var/azurarelay/www
-VOLUME ["/var/azurarelay/www", "/var/azurarelay/stations", "/var/azurarelay/www_tmp", "/etc/letsencrypt"]
+VOLUME ["/var/azurarelay/stations", "/var/azurarelay/www_tmp", "/etc/letsencrypt"]
 
 COPY --chown=azurarelay:azurarelay ./www .
 
