@@ -103,10 +103,18 @@ RUN ln -s /etc/letsencrypt/selfsigned.key /etc/letsencrypt/ssl.key \
 WORKDIR /var/azurarelay/www
 VOLUME ["/var/azurarelay/stations", "/var/azurarelay/www_tmp", "/etc/letsencrypt"]
 
+COPY --chown=azurarelay:azurarelay ./www/composer.json ./www/composer.lock ./
+RUN composer install  \
+    --ignore-platform-reqs \
+    --no-ansi \
+    --no-autoloader \
+    --no-interaction \
+    --no-scripts
+
+# We need to copy our whole application so that we can generate the autoload file inside the vendor folder.
 COPY --chown=azurarelay:azurarelay ./www .
 
-RUN rm -rf vendor \
-    && composer install --no-dev
+RUN composer dump-autoload --optimize --classmap-authoritative
 
 #
 # END Operations as `azurarelay` user
