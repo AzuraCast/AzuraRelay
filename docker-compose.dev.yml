@@ -11,6 +11,11 @@ services:
       - ./www:/var/azurarelay/www
       - tmp_data:/var/azurarelay/www_tmp
       - station_data:/var/azurarelay/stations
+    restart: always
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
     ports:
      - '10080:80'
      - '10443:443'
