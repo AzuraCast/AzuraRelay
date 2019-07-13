@@ -105,7 +105,7 @@ class SetupCommand extends CommandAbstract
         $settings = $this->get(Settings::class);
 
         $temp_path = $settings[Settings::TEMP_DIR].'/azurarelay.env';
-        file_put_contents($temp_path, $envFile);
+        file_put_contents($temp_path, implode("\n", $envFile));
 
         $io->note($envFile);
 
