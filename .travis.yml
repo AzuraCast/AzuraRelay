@@ -5,19 +5,20 @@ env:
 sudo: required
 dist: trusty
 services:
-  - docker
+- docker
 before_install:
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+- sudo apt-get update
+- sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+- sudo rm /usr/local/bin/docker-compose
+- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+  -s`-`uname -m` > docker-compose
+- chmod +x docker-compose
+- sudo mv docker-compose /usr/local/bin
 install:
-  - cp docker-compose.testing.yml docker-compose.yml
+- cp docker-compose.testing.yml docker-compose.yml
 script:
-  - docker-compose build
-  - docker-compose run --rm --user="azurarelay" relay composer test
+- docker-compose build
+- docker-compose run --rm --user="azurarelay" relay composer test
 notifications:
   slack:
-    secure: "szv4j7jfkoA6EXXA5H88uj4QXpA+h8/jWi0cvF58Iizezjh79n7vE6A2NU5haJ6bYQXIcshkz94VryBf9PIaBUZBbWpbtm+ArI1dqCdcfjIzbOTPSr+MEr8wvnfHfvTdn4kcGa5ypk+kdMHCb6LMi8fdp1xM+vAqaKzJrkphRJRN5QuL2vF9XaPnfqJFnvc9HDTs3EcuL1cLo0DrwzwsYcDArRZKdXgZFooPnMn5Va7+ORG5LFQI6Mzz/x3ZXZu3SF/xBiSVAWCCU3sPxXAZTwDBaIrVcyXgx68ahsF6oy+v6RIfdP5jFLC7b93iYOC4qYQ9/GJiZ+wcD9vjdh55QPusImAl1Pz9PsWsoEont7T9uFaQ6pTqcl7ezFC/iteF/7EJidsNDPDnCk56ywZkfue4xcdkEnO2UjMrHzhjEqiOotqFnnVYSgtuNKs1iQbVAU+AgonZoGxzsxPuQvGusJWeEeTYquMAFpUlY2+i3pJ7dxWhkO4DP9xkS386VeDXlA4PK1Jut1M/wLR+ZZhsmG1b6cmrXvZ/zBZREhMVKB+/mbi0MM0rkyaLhuaLgkwlrc6fIqCENPQwqmqVwlXirAkM74fGaEQKqv7/uTe+y8Igkc0g7Gb7Yz2N9jFKTX7KUKl6ezOSSGLFOIekZzNLqCxkYCiUeidFL2sLmYryo4Q="
+    secure: Q0fUZVipVilStZ6/t4SJnQAStc3VdZhUGw44LxETz1NewR24BU+dp4vZsMcVRB8cbCdN1FhqaKDXMGwdn7e+mxoAJVWkcTVlf5ylpX6MHnu1O/qXNwcaq338l/ln4lSvxRlyYmh3WTvgyIU+XQx8T+HuOHWxcodzr6OcFDDjwzqCWbAYBPlNvpab1adoCPD2UAnRR3CDmZfGT55iPX/oTJN2ApVNWg0Lhsta1BUguDztmMZQGGB97pbB0CjeVxDyXVbt3lX1CKL2HtvAI8uUYGBFxkfRPPsot4S0qfk1BBK8nyAZjgZYf8WEKBH+t/8CokgisqBMf0drXIG9XHoMGXS1c1ugaDzjlKlsZg+47eQbPhoup/Ht07Y8FWn5JZQOozfW15oa2oKlFjheDEW2TrFtzUBgUSxF+koNtHlEoZaT+0dshkz4mRSoyE+qH7Xp2R0sXnvXPcFAuwVZrInQuCVQ5icfq1aTRLtxmtN+HwhhYPuXmH12ETH655JO71X3lGaxfaVodj8Q1jEfGKJ7tHqgdyycQeYIop6anovH2FfvHoPMsLekKHZx6Ji3hvWSlXVof0Xd+PMb3EZWJt7nRCPyo7vik+283vjfxS4syi6C5i2tDvI8I/XRugUkwQvzrRPsJXgP4uGf6eWRGGz83Cbdb2KA60jeSEAkzjTD5lc=
