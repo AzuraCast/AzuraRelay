@@ -1,6 +1,13 @@
 # AzuraRelay
 A "relay in a box" containing a lightweight web application and Icecast servers that can connect to and relay an AzuraRelay parent instance.
 
+## Parent Installation Requirements
+
+Before installing AzuraRelay, make sure your "parent" AzuraCast installation:
+
+- is updated to the latest version,
+- has the direct radio ports (i.e. 8000, 8010) exposed (i.e. isn't behind a CloudFlare proxy)
+
 ## Installing
 
 AzuraRelay is powered by Docker and uses pre-built images that contain every component of the software. Don't worry if you aren't very familiar with Docker; our easy installer tools will handle installing Docker and Docker Compose for you, and updates are very simple.
