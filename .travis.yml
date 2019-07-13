@@ -18,3 +18,6 @@ install:
 script:
   - docker-compose build
   - docker-compose run --rm --user="azurarelay" relay composer test
+notifications:
+  slack:
+    secure: "szv4j7jfkoA6EXXA5H88uj4QXpA+h8/jWi0cvF58Iizezjh79n7vE6A2NU5haJ6bYQXIcshkz94VryBf9PIaBUZBbWpbtm+ArI1dqCdcfjIzbOTPSr+MEr8wvnfHfvTdn4kcGa5ypk+kdMHCb6LMi8fdp1xM+vAqaKzJrkphRJRN5QuL2vF9XaPnfqJFnvc9HDTs3EcuL1cLo0DrwzwsYcDArRZKdXgZFooPnMn5Va7+ORG5LFQI6Mzz/x3ZXZu3SF/xBiSVAWCCU3sPxXAZTwDBaIrVcyXgx68ahsF6oy+v6RIfdP5jFLC7b93iYOC4qYQ9/GJiZ+wcD9vjdh55QPusImAl1Pz9PsWsoEont7T9uFaQ6pTqcl7ezFC/iteF/7EJidsNDPDnCk56ywZkfue4xcdkEnO2UjMrHzhjEqiOotqFnnVYSgtuNKs1iQbVAU+AgonZoGxzsxPuQvGusJWeEeTYquMAFpUlY2+i3pJ7dxWhkO4DP9xkS386VeDXlA4PK1Jut1M/wLR+ZZhsmG1b6cmrXvZ/zBZREhMVKB+/mbi0MM0rkyaLhuaLgkwlrc6fIqCENPQwqmqVwlXirAkM74fGaEQKqv7/uTe+y8Igkc0g7Gb7Yz2N9jFKTX7KUKl6ezOSSGLFOIekZzNLqCxkYCiUeidFL2sLmYryo4Q="
