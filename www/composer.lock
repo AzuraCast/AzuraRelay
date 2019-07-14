@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/azuracore.git",
-                "reference": "bf4f29d5bfa70c4d06e9f5abd0f2074159d0837a"
+                "reference": "c4ea85ef91166236b16e25d012635fdebb1b4bb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AzuraCast/azuracore/zipball/bf4f29d5bfa70c4d06e9f5abd0f2074159d0837a",
-                "reference": "bf4f29d5bfa70c4d06e9f5abd0f2074159d0837a",
+                "url": "https://api.github.com/repos/AzuraCast/azuracore/zipball/c4ea85ef91166236b16e25d012635fdebb1b4bb3",
+                "reference": "c4ea85ef91166236b16e25d012635fdebb1b4bb3",
                 "shasum": ""
             },
             "require": {
@@ -67,7 +67,7 @@
                 }
             ],
             "description": "A lightweight core application framework.",
-            "time": "2019-07-08T04:45:24+00:00"
+            "time": "2019-07-14T16:54:35+00:00"
         },
         {
             "name": "azuracast/php-api-client",

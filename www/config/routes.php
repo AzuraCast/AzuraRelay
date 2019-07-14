@@ -4,6 +4,6 @@ use App\Middleware;
 
 return function(\Azura\App $app)
 {
-    $app->get('/', Controller\Frontend\IndexController::class)
+    $app->get('/[{path:.*}]', Controller\Frontend\IndexController::class)
         ->setName('home');
 };
