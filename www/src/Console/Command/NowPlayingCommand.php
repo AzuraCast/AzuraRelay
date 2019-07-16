@@ -66,7 +66,10 @@ class NowPlayingCommand extends CommandAbstract
 
             foreach($relay->getMounts() as $mount) {
                 try {
-                    $np[$relay->getId()][$mount->getPath()] = $npAdapter->getNowPlaying($mount->getPath());
+                    $np_mount = $npAdapter->getNowPlaying($mount->getPath());
+                    $np_mount['listeners']['clients'] = $npAdapter->getClients($mount->getPath(), true);
+
+                    $np[$relay->getId()][$mount->getPath()] = $np_mount;
                 } catch(\NowPlaying\Exception $e) {
                     $io->error(sprintf('NowPlaying adapter error: %s', $e->getMessage()));
                 }
