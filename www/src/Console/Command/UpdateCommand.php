@@ -135,6 +135,7 @@ class UpdateCommand extends CommandAbstract
                 'ssl-certificate' => '/etc/letsencrypt/ssl.crt',
                 'ssl-allowed-ciphers' => 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS',
                 'x-forwarded-for' => '127.0.0.1',
+                'all-x-forwarded-for' => '1',
             ],
             'logging' => [
                 'accesslog' => $relay->getShortcode().'access.log',
