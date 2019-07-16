@@ -113,12 +113,12 @@ install() {
 
     if [[ ! -f azurarelay.env ]]; then
         touch azurarelay.env
-
-        docker-compose up -d
-        docker-compose run --rm --user="azurarelay" relay cli app:setup
-        docker cp azurarelay_relay_1:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
-        docker-compose down -v
     fi
+
+    docker-compose up -d
+    docker-compose run --rm --user="azurarelay" relay cli app:setup
+    docker cp azurarelay_relay_1:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
+    docker-compose down -v
 
     docker-compose up -d
     docker-compose exec --user="azurarelay" relay cli app:update
@@ -212,6 +212,24 @@ uninstall() {
         echo ""
     fi
 
+    exit
+}
+
+#
+# Create and link a LetsEncrypt SSL certificate.
+# Usage: ./docker.sh letsencrypt-create domainname.example.com
+#
+letsencrypt-create() {
+    docker-compose exec --user="azurarelay" relay letsencrypt_connect $*
+    exit
+}
+
+#
+# Renew an existing LetsEncrypt SSL certificate
+# Usage: ./docker.sh letsencrypt-renew
+#
+letsencrypt-renew() {
+    docker-compose exec --user="azurarelay" relay letsencrypt_renew $*
     exit
 }
 

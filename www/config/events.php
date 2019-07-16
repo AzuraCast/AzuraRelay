@@ -9,6 +9,7 @@ return function (\Azura\EventDispatcher $dispatcher)
         $event->getConsole()->addCommands([
             new Command\SetupCommand,
             new Command\UpdateCommand,
+            new Command\NowPlayingCommand,
         ]);
     }, 0);
 };

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "94bb019f84d9ad2cbb495d4613007907",
+    "content-hash": "9ae1e3974beff49e5a624fbabcc09dfd",
     "packages": [
         {
             "name": "azuracast/azuracore",
@@ -70,17 +70,63 @@
             "time": "2019-07-14T16:54:35+00:00"
         },
         {
+            "name": "azuracast/nowplaying",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AzuraCast/nowplaying.git",
+                "reference": "9057eb0dacea90d8e93c061145ae775df5884a8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AzuraCast/nowplaying/zipball/9057eb0dacea90d8e93c061145ae775df5884a8e",
+                "reference": "9057eb0dacea90d8e93c061145ae775df5884a8e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "ext-xml": "*",
+                "guzzlehttp/guzzle": ">6.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "overtrue/phplint": "^1.1",
+                "phpstan/phpstan": "^0.11.1",
+                "phpstan/phpstan-strict-rules": "^0.11.0",
+                "roave/security-advisories": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NowPlaying\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Buster Neece",
+                    "email": "buster@busterneece.com"
+                }
+            ],
+            "description": "A lightweight PHP adapter for viewing the current now playing data in Icecast and SHOUTcast 1/2. A part of the AzuraCast software suite.",
+            "time": "2019-05-06T03:23:11+00:00"
+        },
+        {
             "name": "azuracast/php-api-client",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/php-api-client.git",
-                "reference": "4751ff42a9808ee96f566ea156765a4924837e27"
+                "reference": "6e6144bd3836eee12a0e900b0054e6718d469779"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AzuraCast/php-api-client/zipball/4751ff42a9808ee96f566ea156765a4924837e27",
-                "reference": "4751ff42a9808ee96f566ea156765a4924837e27",
+                "url": "https://api.github.com/repos/AzuraCast/php-api-client/zipball/6e6144bd3836eee12a0e900b0054e6718d469779",
+                "reference": "6e6144bd3836eee12a0e900b0054e6718d469779",
                 "shasum": ""
             },
             "require": {
@@ -90,8 +136,12 @@
                 "php": ">=7.2.0"
             },
             "require-dev": {
+                "fzaninotto/faker": "^1.8",
+                "overtrue/phplint": "^1.1",
+                "phpstan/phpstan": "^0.11.1",
+                "phpstan/phpstan-strict-rules": "^0.11.0",
                 "phpunit/phpunit": "^7.5",
-                "vlucas/phpdotenv": "^3.3"
+                "roave/security-advisories": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -107,6 +157,10 @@
                 {
                     "name": "Vaalyn",
                     "email": "vaalyndev@gmail.com"
+                },
+                {
+                    "name": "Buster 'Silver Eagle' Neece",
+                    "email": "buster@busterneece.com"
                 }
             ],
             "description": "An API client library for the AzuraCast API",
@@ -116,7 +170,7 @@
                 "azuracast",
                 "client"
             ],
-            "time": "2019-07-12T16:30:29+00:00"
+            "time": "2019-07-16T00:33:10+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -2054,16 +2108,16 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.10.0",
+            "version": "v1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "228a9fc64cf4ba84c7967c1076d94209db03e0ee"
+                "reference": "5115fa44886d1c2785d2f135ef4626db868eac4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/228a9fc64cf4ba84c7967c1076d94209db03e0ee",
-                "reference": "228a9fc64cf4ba84c7967c1076d94209db03e0ee",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/5115fa44886d1c2785d2f135ef4626db868eac4b",
+                "reference": "5115fa44886d1c2785d2f135ef4626db868eac4b",
                 "shasum": ""
             },
             "require": {
@@ -2132,7 +2186,7 @@
                 "secret-key cryptography",
                 "side-channel resistant"
             ],
-            "time": "2019-05-13T16:04:50+00:00"
+            "time": "2019-07-12T16:36:59+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -4869,66 +4923,17 @@
             "time": "2019-05-12T16:59:47+00:00"
         },
         {
-            "name": "psr/http-client",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/http-client.git",
-                "reference": "496a823ef742b632934724bf769560c2a5c7c44e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-client/zipball/496a823ef742b632934724bf769560c2a5c7c44e",
-                "reference": "496a823ef742b632934724bf769560c2a5c7c44e",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.0",
-                "psr/http-message": "^1.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Http\\Client\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for HTTP clients",
-            "homepage": "https://github.com/php-fig/http-client",
-            "keywords": [
-                "http",
-                "http-client",
-                "psr",
-                "psr-18"
-            ],
-            "time": "2018-10-30T23:29:13+00:00"
-        },
-        {
             "name": "roave/security-advisories",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "a53a6f855cbff7edb078f87c72bb808c89443a00"
+                "reference": "2e50fc5a89e1e77b68c7e3c3aa6d87da0b8d4c6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a53a6f855cbff7edb078f87c72bb808c89443a00",
-                "reference": "a53a6f855cbff7edb078f87c72bb808c89443a00",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2e50fc5a89e1e77b68c7e3c3aa6d87da0b8d4c6d",
+                "reference": "2e50fc5a89e1e77b68c7e3c3aa6d87da0b8d4c6d",
                 "shasum": ""
             },
             "conflict": {
@@ -5031,7 +5036,7 @@
                 "silverstripe/userforms": "<3",
                 "simple-updates/phpwhois": "<=1",
                 "simplesamlphp/saml2": "<1.10.6|>=2,<2.3.8|>=3,<3.1.4",
-                "simplesamlphp/simplesamlphp": "<1.15.2|>=1.16,<1.16.3",
+                "simplesamlphp/simplesamlphp": "<1.17.3",
                 "simplesamlphp/simplesamlphp-module-infocard": "<1.0.1",
                 "slim/slim": "<2.6",
                 "smarty/smarty": "<3.1.33",
@@ -5130,7 +5135,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2019-06-25T10:37:35+00:00"
+            "time": "2019-07-14T14:21:52+00:00"
         },
         {
             "name": "symfony/finder",
@@ -5294,6 +5299,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "azuracast/azuracore": 20,
+        "azuracast/nowplaying": 20,
         "azuracast/php-api-client": 20,
         "roave/security-advisories": 20
     },

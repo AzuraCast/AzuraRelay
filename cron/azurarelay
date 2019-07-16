@@ -1,2 +1,6 @@
+* * * * *   root        sleep 10; /usr/local/bin/cron_task cli app:nowplaying
+* * * * *   root        sleep 25; /usr/local/bin/cron_task cli app:nowplaying
+* * * * *   root        sleep 40; /usr/local/bin/cron_task cli app:nowplaying
+* * * * *   root        sleep 55; /usr/local/bin/cron_task cli app:nowplaying
 30 * * * *   root        /usr/local/bin/cron_task cli app:update
 0 */6 * * *   root     /usr/local/bin/temp_cleanup

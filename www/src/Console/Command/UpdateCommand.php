@@ -4,7 +4,7 @@ namespace App\Console\Command;
 use Azura\Console\Command\CommandAbstract;
 use Azura\Settings;
 use AzuraCast\Api\Client;
-use AzuraCast\Api\Dto\AdminRelaysDto;
+use AzuraCast\Api\Dto\AdminRelayDto;
 use GuzzleHttp\Psr7\Uri;
 use Monolog\Logger;
 use Supervisor\Supervisor;
@@ -49,6 +49,12 @@ class UpdateCommand extends CommandAbstract
         $api = $this->get(Client::class);
 
         $relays = $api->admin()->relays()->list();
+
+        // Write relay information to JSON file.
+        $relayInfoPath = $configDir.'/stations.json';
+        file_put_contents($relayInfoPath, json_encode($relays));
+
+        // Write supervisord config
         $supervisorConfig = [];
         $stations = [];
 
@@ -85,7 +91,7 @@ class UpdateCommand extends CommandAbstract
         return 0;
     }
 
-    protected function writeStationConfiguration(AdminRelaysDto $relay, string $baseDir, string $baseUrl): string
+    protected function writeStationConfiguration(AdminRelayDto $relay, string $baseDir, string $baseUrl): string
     {
         $configPath = $baseDir.'/'.$relay->getShortcode().'.xml';
 
@@ -104,9 +110,9 @@ class UpdateCommand extends CommandAbstract
             ],
             'authentication' => [
                 'source-password' => $this->generatePassword(),
-                'relay-password' => $this->generatePassword(),
+                'relay-password' => $relay->getRelayPassword(),
                 'admin-user' => 'admin',
-                'admin-password' => $this->generatePassword(),
+                'admin-password' => $relay->getAdminPassword(),
             ],
 
             'listen-socket' => [
@@ -143,12 +149,12 @@ class UpdateCommand extends CommandAbstract
 
         $uri = new Uri($baseUrl);
 
-        if ('icecast' === $relay->getType() && !empty($relay->getPassword())) {
+        if ('icecast' === $relay->getType() && !empty($relay->getRelayPassword())) {
             // Use the built-in Icecast relay mechanism.
             $config['master-server'] = $uri->getHost();
             $config['master-server-port'] = $relay->getPort();
             $config['master-update-interval'] = 120;
-            $config['master-password'] = $relay->getPassword();
+            $config['master-password'] = $relay->getRelayPassword();
         } else {
             // Manually relay each individual mountpoint.
             $config['mount'] = [];

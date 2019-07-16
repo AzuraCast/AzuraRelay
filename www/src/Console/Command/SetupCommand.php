@@ -34,6 +34,9 @@ class SetupCommand extends CommandAbstract
         $io->title('AzuraRelay Setup');
         $io->writeln('Welcome to AzuraRelay! Provide the following items to finish setup.');
 
+        //
+        // Parent installation URL
+        //
         $io->section('AzuraCast Installation URL');
         $io->writeln('AzuraRelay has to connect to a "parent" AzuraCast instance to relay its broadcast(s).');
         $io->writeln('Provide the base URL of that installation (including "http://" or "https://") to continue.');
@@ -58,6 +61,9 @@ class SetupCommand extends CommandAbstract
             return 1;
         }
 
+        //
+        // API Key
+        //
         $apiKeyUrl = (string)(new Uri($baseUrl))->withPath('/api_keys');
 
         $io->section('AzuraCast API Key');
@@ -85,6 +91,34 @@ class SetupCommand extends CommandAbstract
             return 1;
         }
 
+        //
+        // Relay Name
+        //
+
+        $io->section('About This Relay');
+        $io->writeln('You can now provide some details about this relay.');
+        $io->writeln('These details will be reported back to the parent AzuraCast instance and');
+        $io->writeln('displayed to listeners if this relay is public.');
+
+        $question = new Question\Question('Relay Display Name', getenv('AZURARELAY_NAME') ?? 'Relay');
+        $relayName = $io->askQuestion($question);
+
+        //
+        // Relay Base URL
+        //
+
+        $publicIp = @file_get_contents('http://ipecho.net/plain');
+
+        $question = new Question\Question('Relay Base URL', getenv('AZURARELAY_BASE_URL') ?? $publicIp);
+        $relayBaseUrl = $io->askQuestion($question);
+
+        //
+        // Relay is Public
+        //
+
+        $question = new Question\ConfirmationQuestion('Show This Relay to AzuraCast Listeners?', getenv('AZURARELAY_IS_PUBLIC') ?? true);
+        $relayIsPublic = $io->askQuestion($question);
+
         $io->section('Generating configuration file...');
 
         $envFile = [
@@ -96,8 +130,14 @@ class SetupCommand extends CommandAbstract
             '# The API key for an authorized user on the parent AzuraCast instance.',
             'AZURACAST_API_KEY='.$apiKey,
             '',
-            '# To only relay specific stations, add their IDs in a comma-separated list into the field below.',
-            'AZURACAST_STATIONS=',
+            '# The display name of this relay.',
+            'AZURARELAY_NAME='.$relayName,
+            '',
+            '# The base URL of this relay.',
+            'AZURARELAY_BASE_URL='.$relayBaseUrl,
+            '',
+            '# Whether this relay is shown to listeners on the parent AzuraCast instance.',
+            'AZURARELAY_IS_PUBLIC='.($relayIsPublic ? 'true' : 'false'),
             '',
         ];
 
