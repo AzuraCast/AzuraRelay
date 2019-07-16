@@ -29,6 +29,10 @@ RUN apt-get update \
     supervisor \
     # Icecast 
     libxml2 libxslt1-dev libvorbis-dev \
+    && add-apt-repository -y ppa:certbot/certbot \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -q -y --no-install-recommends \
+        certbot \
     && rm -rf /var/lib/apt/lists/*
 
 # Create azurarelay user.
