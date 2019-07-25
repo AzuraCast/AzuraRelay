@@ -1,7 +1,7 @@
 #
 # Icecast build stage (for later copy)
 #
-FROM azuracast/icecast-kh-ac:2.4.0-kh10-ac4 AS icecast
+FROM azuracast/icecast-kh-ac:latest AS icecast
 
 #
 # Base image
