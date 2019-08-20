@@ -1,0 +1,17 @@
+name: Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  test_suite:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    
+    - name: Run test suite
+      run: |
+        cp docker-compose.testing.yml docker-compose.yml
+        docker-compose build
+        docker-compose run --rm --user="azurarelay" relay composer test
