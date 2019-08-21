@@ -5,7 +5,7 @@ use App\Console\Command;
 return function (\Azura\EventDispatcher $dispatcher)
 {
     // Build CLI commands
-    $dispatcher->addListener(Event\BuildConsoleCommands::NAME, function(Event\BuildConsoleCommands $event) {
+    $dispatcher->addListener(Event\BuildConsoleCommands::class, function(Event\BuildConsoleCommands $event) {
         $event->getConsole()->addCommands([
             new Command\SetupCommand,
             new Command\UpdateCommand,

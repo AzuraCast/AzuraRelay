@@ -1,23 +1,19 @@
 <?php
-return function (\Azura\Container $di)
-{
-    $di->extend(\Azura\Console\Application::class, function(\Azura\Console\Application $console, $di) {
+return [
+    Azura\Console\Application::class => DI\decorate(function(Azura\Console\Application $console, Psr\Container\ContainerInterface $di) {
         $console->setName('AzuraRelay Command Line Utility');
         return $console;
-    });
+    }),
 
-    $di[\AzuraCast\Api\Client::class] = function($di) {
-        /** @var \GuzzleHttp\Client $diClient */
-        $httpClient = $di[\GuzzleHttp\Client::class];
-
-        return \AzuraCast\Api\Client::create(
+    AzuraCast\Api\Client::class => function(GuzzleHttp\Client $httpClient) {
+        return AzuraCast\Api\Client::create(
             getenv('AZURACAST_BASE_URL'),
             getenv('AZURACAST_API_KEY'),
             $httpClient
         );
-    };
+    },
 
-    $di[\Supervisor\Supervisor::class] = function ($di) {
+    Supervisor\Supervisor::class => function() {
         $guzzle_client = new \GuzzleHttp\Client();
         $client = new \fXmlRpc\Client(
             'http://127.0.0.1:9001/RPC2',
@@ -35,10 +31,5 @@ return function (\Azura\Container $di)
         }
 
         return $supervisor;
-    };
-
-    // Controller groups
-    $di->register(new \App\Provider\FrontendProvider);
-
-    return $di;
-};
+    },
+];

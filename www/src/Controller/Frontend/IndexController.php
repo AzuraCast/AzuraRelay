@@ -1,13 +1,14 @@
 <?php
 namespace App\Controller\Frontend;
 
-use Azura\Http\Request;
 use Azura\Http\Response;
+use Azura\Http\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\ResponseInterface;
 
 class IndexController
 {
-    public function __invoke(Request $request, Response $response, ?string $path = null): Response
+    public function __invoke(ServerRequest $request, Response $response, ?string $path = null): ResponseInterface
     {
         $baseUrl = getenv('AZURACAST_BASE_URL');
 
