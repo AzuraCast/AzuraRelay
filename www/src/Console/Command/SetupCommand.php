@@ -4,33 +4,19 @@ namespace App\Console\Command;
 use Azura\Console\Command\CommandAbstract;
 use Azura\Settings;
 use AzuraCast\Api\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SetupCommand extends CommandAbstract
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
-    {
-        $this->setName('app:setup')
-            ->setDescription('Run initial setup process.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        /** @var \GuzzleHttp\Client $httpClient */
-        $httpClient = $this->get(\GuzzleHttp\Client::class);
-
-        $io = new SymfonyStyle($input, $output);
+    public function __invoke(
+        SymfonyStyle $io,
+        GuzzleClient $httpClient,
+        Client $api,
+        Settings $settings
+    ) {
         $io->title('AzuraRelay Setup');
         $io->writeln('Welcome to AzuraRelay! Provide the following items to finish setup.');
 
@@ -140,9 +126,6 @@ class SetupCommand extends CommandAbstract
             'AZURARELAY_IS_PUBLIC='.($relayIsPublic ? 'true' : 'false'),
             '',
         ];
-
-        /** @var Settings $settings */
-        $settings = $this->get(Settings::class);
 
         $temp_path = $settings[Settings::TEMP_DIR].'/azurarelay.env';
         file_put_contents($temp_path, implode("\n", $envFile));

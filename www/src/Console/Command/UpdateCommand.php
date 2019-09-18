@@ -14,21 +14,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class UpdateCommand extends CommandAbstract
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
-    {
-        $this->setName('app:update')
-            ->setDescription('Update local relay configuration based on remote setup.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $io = new SymfonyStyle($input, $output);
+    public function __invoke(
+        SymfonyStyle $io,
+        Settings $settings,
+        Client $api,
+        Supervisor $supervisor
+    ) {
         $io->title('AzuraRelay Updater');
 
         $baseUrl = getenv('AZURACAST_BASE_URL');
@@ -39,14 +30,8 @@ class UpdateCommand extends CommandAbstract
             return 1;
         }
 
-        /** @var Settings $settings */
-        $settings = $this->get(Settings::class);
-
         $configDir = dirname($settings[Settings::BASE_DIR]).'/stations';
         $supervisorPath = $configDir.'/supervisord.conf';
-
-        /** @var Client $api */
-        $api = $this->get(Client::class);
 
         $relays = $api->admin()->relays()->list();
 
@@ -85,14 +70,17 @@ class UpdateCommand extends CommandAbstract
 
         file_put_contents($supervisorPath, implode("\n", $supervisorConfig));
 
-        $this->reloadSupervisor();
+        $this->reloadSupervisor($supervisor);
 
         $io->success('Update successful. Relay is functioning!');
         return 0;
     }
 
-    protected function writeStationConfiguration(AdminRelayDto $relay, string $baseDir, string $baseUrl): string
-    {
+    protected function writeStationConfiguration(
+        AdminRelayDto $relay,
+        string $baseDir,
+        string $baseUrl
+    ): string {
         $configPath = $baseDir.'/'.$relay->getShortcode().'.xml';
 
         $config = [
@@ -198,13 +186,9 @@ class UpdateCommand extends CommandAbstract
      *
      * @return array A list of affected service groups (either stopped, removed or changed).
      */
-    protected function reloadSupervisor(): array
+    protected function reloadSupervisor(Supervisor $supervisor): array
     {
-        /** @var Supervisor $supervisor */
-        $supervisor = $this->get(Supervisor::class);
-
-        /** @var Logger $logger */
-        $logger = $this->get(Logger::class);
+        $logger = \Azura\Logger::getInstance();
 
         $reload_result = $supervisor->reloadConfig();
 

@@ -13,21 +13,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NowPlayingCommand extends CommandAbstract
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
-    {
-        $this->setName('app:nowplaying')
-            ->setDescription('Send "Now Playing" information to the parent AzuraCast server.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $io = new SymfonyStyle($input, $output);
+    public function __invoke(
+        SymfonyStyle $io,
+        Client $api,
+        Settings $settings
+    ) {
         $io->title('AzuraRelay Now Playing');
 
         $baseUrl = getenv('AZURACAST_BASE_URL');
@@ -37,12 +27,6 @@ class NowPlayingCommand extends CommandAbstract
             $io->error('Base URL or API key is not specified. Please supply these values in "azurarelay.env" to continue!.');
             return 1;
         }
-
-        /** @var Client $api */
-        $api = $this->get(Client::class);
-
-        /** @var Settings $settings */
-        $settings = $this->get(Settings::class);
 
         $configDir = dirname($settings[Settings::BASE_DIR]).'/stations';
         $relayInfoPath = $configDir.'/stations.json';
