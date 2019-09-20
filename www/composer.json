@@ -7,9 +7,9 @@
     "php": ">=7.2",
     "ext-json": "*",
 
-    "azuracast/azuracore": "dev-master",
-    "azuracast/nowplaying": "dev-master",
-    "azuracast/php-api-client": "dev-master",
+    "azuracast/azuracore": "^0.3.1",
+    "azuracast/nowplaying": "^1.1",
+    "azuracast/php-api-client": "^1.1",
     "cakephp/chronos": "^1.2",
     "lstrojny/fxmlrpc": "^0.14.0",
     "php-http/guzzle6-adapter": "^1.1",

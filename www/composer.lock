@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e3653770f7d70ff65378d07fc6ad51c6",
+    "content-hash": "225bd3ee54e94743f8acd8a0dccae880",
     "packages": [
         {
             "name": "azuracast/azuracore",
-            "version": "dev-master",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/azuracore.git",
-                "reference": "3f31357e03e91249c4284d579cf593891e206412"
+                "reference": "845c0f968492f6a90c9e09cfafcfb4711b746282"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AzuraCast/azuracore/zipball/3f31357e03e91249c4284d579cf593891e206412",
-                "reference": "3f31357e03e91249c4284d579cf593891e206412",
+                "url": "https://api.github.com/repos/AzuraCast/azuracore/zipball/845c0f968492f6a90c9e09cfafcfb4711b746282",
+                "reference": "845c0f968492f6a90c9e09cfafcfb4711b746282",
                 "shasum": ""
             },
             "require": {
@@ -71,11 +71,11 @@
                 }
             ],
             "description": "A lightweight core application framework.",
-            "time": "2019-09-12T04:10:12+00:00"
+            "time": "2019-09-20T05:10:04+00:00"
         },
         {
             "name": "azuracast/nowplaying",
-            "version": "dev-master",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/nowplaying.git",
@@ -121,7 +121,7 @@
         },
         {
             "name": "azuracast/php-api-client",
-            "version": "dev-master",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/php-api-client.git",
@@ -6168,9 +6168,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "azuracast/azuracore": 20,
-        "azuracast/nowplaying": 20,
-        "azuracast/php-api-client": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": true,
