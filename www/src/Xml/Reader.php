@@ -8,7 +8,7 @@ namespace App\Xml;
 /**
  * XML config reader.
  */
-class Reader extends \Zend\Config\Reader\Xml
+class Reader extends \Laminas\Config\Reader\Xml
 {
     /**
      * Get all attributes on the current node.

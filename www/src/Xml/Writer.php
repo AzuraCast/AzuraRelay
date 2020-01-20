@@ -7,10 +7,10 @@ namespace App\Xml;
 
 use Traversable;
 use XMLWriter;
-use Zend\Config\Exception;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Config\Exception;
+use Laminas\Stdlib\ArrayUtils;
 
-class Writer extends \Zend\Config\Writer\Xml
+class Writer extends \Laminas\Config\Writer\Xml
 {
     /**
      * toString(): defined by Writer interface.

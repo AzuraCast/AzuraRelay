@@ -4,20 +4,21 @@
   "homepage": "https://github.com/AzuraCast/AzuraRelay",
   "license": "Apache-2.0",
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.4",
     "ext-json": "*",
+    "ext-xmlwriter": "*",
 
     "azuracast/azuracore": "^0.3.1",
     "azuracast/nowplaying": "^1.1",
     "azuracast/php-api-client": "^1.1",
     "cakephp/chronos": "^1.2",
+    "laminas/laminas-config": "^3.3",
     "lstrojny/fxmlrpc": "^0.14.0",
     "php-http/guzzle6-adapter": "^1.1",
     "php-http/message": "^1.4",
     "php-http/socket-client": "^1.2",
     "php-http/httplug": "^1.0",
-    "supervisorphp/supervisor": "^3.0",
-    "zendframework/zend-config": "^3.3"
+    "supervisorphp/supervisor": "^3.0"
   },
   "require-dev": {
     "phpstan/phpstan": "^0.11.1",
