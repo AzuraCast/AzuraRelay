@@ -9,7 +9,7 @@ apt-get update
 
 $minimal_apt_get_install certbot openssl
 
-mkdir -p /var/www/letsencrypt /var/lib/letsencrypt /etc/letsencrypt /var/log/letsencrypt
+mkdir -p /var/www/letsencrypt /var/lib/letsencrypt /etc/letsencrypt/renewal-hooks/deploy /var/log/letsencrypt
 chown -R azurarelay:azurarelay /var/www/letsencrypt /var/lib/letsencrypt /etc/letsencrypt /var/log/letsencrypt
 
 # SSL self-signed cert generation
