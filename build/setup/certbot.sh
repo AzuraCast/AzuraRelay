@@ -20,3 +20,7 @@ openssl req -new -nodes -x509 -subj "/C=US/ST=Texas/L=Austin/O=IT/CN=localhost" 
 
 ln -s /etc/letsencrypt/selfsigned.key /etc/letsencrypt/ssl.key
 ln -s /etc/letsencrypt/selfsigned.crt /etc/letsencrypt/ssl.crt
+
+# Add nginx restart hook.
+cp /bd_build/letsencrypt/01-reload-nginx /etc/letsencrypt/renewal-hooks/deploy/01-reload-nginx
+chmod a+x /etc/letsencrypt/renewal-hooks/deploy/*
