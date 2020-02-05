@@ -1,8 +1,8 @@
 <?php
 namespace App\Console\Command;
 
-use Azura\Console\Command\CommandAbstract;
-use Azura\Settings;
+use App\Console\Command\CommandAbstract;
+use App\Settings;
 use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use GuzzleHttp\Psr7\Uri;
@@ -188,7 +188,7 @@ class UpdateCommand extends CommandAbstract
      */
     protected function reloadSupervisor(Supervisor $supervisor): array
     {
-        $logger = \Azura\Logger::getInstance();
+        $logger = \App\Logger::getInstance();
 
         $reload_result = $supervisor->reloadConfig();
 

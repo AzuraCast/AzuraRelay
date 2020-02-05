@@ -1,7 +1,7 @@
 <?php
 use App\Controller;
 
-return function(\Azura\App $app)
+return function(\App\App $app)
 {
     $app->get('/[{path:.*}]', Controller\Frontend\IndexController::class)
         ->setName('home');

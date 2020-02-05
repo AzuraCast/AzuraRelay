@@ -1,7 +1,7 @@
 <?php
 
 use App\Console\Command;
-use Azura\Console\Application;
+use App\Console\Application;
 
 return function(Application $console)
 {

@@ -1,8 +1,8 @@
 <?php
 namespace App\Console\Command;
 
-use Azura\Console\Command\CommandAbstract;
-use Azura\Settings;
+use App\Console\Command\CommandAbstract;
+use App\Settings;
 use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use AzuraCast\Api\Dto\AdminRelayUpdateDto;

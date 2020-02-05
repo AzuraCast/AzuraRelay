@@ -5,8 +5,8 @@ parameters:
         - src
 
     universalObjectCratesClasses:
-        - Azura\Session\NamespaceInterface
-        - Azura\View
+        - App\Session\NamespaceInterface
+        - App\View
 
     ignoreErrors:
         # Supervisor functions that do exist but aren't annotated properly in the connector lib.

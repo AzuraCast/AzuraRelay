@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller\Frontend;
 
-use Azura\Http\Response;
-use Azura\Http\ServerRequest;
+use App\Http\Response;
+use App\Http\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\ResponseInterface;
 
