@@ -80,7 +80,7 @@ install() {
                 exit 1
             fi
 
-            COMPOSE_VERSION=`git ls-remote https://github.com/docker/compose | grep refs/tags | grep -oP "[0-9]+\.[0-9][0-9]+\.[0-9]+$" | tail -n 1`
+            COMPOSE_VERSION=`git ls-remote https://github.com/docker/compose | grep refs/tags | grep -oP "v?[0-9]+\.[0-9][0-9]+\.[0-9]+$" | sort -t'/' -n | tail -n 1`
 
             if [[ $EUID -ne 0 ]]; then
                 if [[ ! $(which sudo) ]]; then
