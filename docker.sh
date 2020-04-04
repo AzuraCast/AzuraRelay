@@ -154,6 +154,8 @@ update() {
         docker-compose down
     fi
 
+    docker volume rm azurarelay_tmp_data
+
     docker-compose up -d
     docker-compose exec --user="azurarelay" relay cli app:update
 
