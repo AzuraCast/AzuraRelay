@@ -7,7 +7,3 @@ parameters:
     universalObjectCratesClasses:
         - App\Session\NamespaceInterface
         - App\View
-
-    ignoreErrors:
-        # Supervisor functions that do exist but aren't annotated properly in the connector lib.
-        - '#Call to an undefined method Supervisor\\Supervisor::reloadConfig().#'

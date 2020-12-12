@@ -76,11 +76,6 @@ class Environment
         return $this->data[self::APP_NAME] ?? 'Application';
     }
 
-    public function getAssetUrl(): ?string
-    {
-        return $this->data[self::ASSET_URL] ?? '';
-    }
-
     /**
      * @return string The base directory of the application, i.e. `/var/app/www` for Docker installations.
      */

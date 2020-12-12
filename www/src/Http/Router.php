@@ -14,22 +14,12 @@ use Slim\Routing\RouteContext;
 
 class Router implements RouterInterface
 {
-    /** @var RouteParserInterface */
-    protected $route_parser;
+    protected RouteParserInterface $route_parser;
 
-    /** @var Environment */
-    protected $settings;
+    protected ServerRequestInterface $current_request;
 
-    /** @var ServerRequestInterface */
-    protected $current_request;
-
-    /**
-     * @param Environment $settings
-     * @param RouteParserInterface $route_parser
-     */
-    public function __construct(Environment $settings, RouteParserInterface $route_parser)
+    public function __construct(RouteParserInterface $route_parser)
     {
-        $this->settings = $settings;
         $this->route_parser = $route_parser;
     }
 
@@ -65,17 +55,11 @@ class Router implements RouterInterface
         return UriResolver::resolve($base, $rel);
     }
 
-    /**
-     * @return ServerRequestInterface
-     */
     public function getCurrentRequest(): ServerRequestInterface
     {
         return $this->current_request;
     }
 
-    /**
-     * @param ServerRequestInterface $current_request
-     */
     public function setCurrentRequest(ServerRequestInterface $current_request): void
     {
         $this->current_request = $current_request;
@@ -168,11 +152,6 @@ class Router implements RouterInterface
     public function getBaseUrl(bool $use_request = true): UriInterface
     {
         static $base_url;
-
-        // Check the settings for a hard-coded base URI.
-        if (!$base_url && !empty($this->settings[Environment::BASE_URL])) {
-            $base_url = new Uri($this->settings[Environment::BASE_URL]);
-        }
 
         // Use the current request's URI if applicable.
         if ($use_request && $this->current_request instanceof ServerRequestInterface) {
