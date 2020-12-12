@@ -2,7 +2,7 @@
 namespace App\Http;
 
 use App\Exception;
-use App\Settings;
+use App\Environment;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use InvalidArgumentException;
@@ -17,17 +17,17 @@ class Router implements RouterInterface
     /** @var RouteParserInterface */
     protected $route_parser;
 
-    /** @var Settings */
+    /** @var Environment */
     protected $settings;
 
     /** @var ServerRequestInterface */
     protected $current_request;
 
     /**
-     * @param Settings $settings
+     * @param Environment $settings
      * @param RouteParserInterface $route_parser
      */
-    public function __construct(Settings $settings, RouteParserInterface $route_parser)
+    public function __construct(Environment $settings, RouteParserInterface $route_parser)
     {
         $this->settings = $settings;
         $this->route_parser = $route_parser;
@@ -170,8 +170,8 @@ class Router implements RouterInterface
         static $base_url;
 
         // Check the settings for a hard-coded base URI.
-        if (!$base_url && !empty($this->settings[Settings::BASE_URL])) {
-            $base_url = new Uri($this->settings[Settings::BASE_URL]);
+        if (!$base_url && !empty($this->settings[Environment::BASE_URL])) {
+            $base_url = new Uri($this->settings[Environment::BASE_URL]);
         }
 
         // Use the current request's URI if applicable.

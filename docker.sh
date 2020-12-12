@@ -1,5 +1,115 @@
 #!/usr/bin/env bash
 
+# Functions to manage .env files
+__dotenv=
+__dotenv_file=
+__dotenv_cmd=.env
+
+.env() {
+    REPLY=()
+    [[ $__dotenv_file || ${1-} == -* ]] || .env.--file .env || return
+    if declare -F -- ".env.${1-}" >/dev/null; then
+        .env."$@"
+        return
+    fi
+    return 64
+}
+
+.env.-f() { .env.--file "$@"; }
+
+.env.get() {
+    .env::arg "get requires a key" "$@" &&
+        [[ "$__dotenv" =~ ^(.*(^|$'\n'))([ ]*)"$1="(.*)$ ]] &&
+        REPLY=${BASH_REMATCH[4]%%$'\n'*} && REPLY=${REPLY%"${REPLY##*[![:space:]]}"}
+}
+
+.env.parse() {
+    local line key
+    while IFS= read -r line; do
+        line=${line#"${line%%[![:space:]]*}"} # trim leading whitespace
+        line=${line%"${line##*[![:space:]]}"} # trim trailing whitespace
+        if [[ ! "$line" || "$line" == '#'* ]]; then continue; fi
+        if (($#)); then
+            for key; do
+                if [[ $key == "${line%%=*}" ]]; then
+                    REPLY+=("$line")
+                    break
+                fi
+            done
+        else
+            REPLY+=("$line")
+        fi
+    done <<<"$__dotenv"
+    ((${#REPLY[@]}))
+}
+
+.env.export() { ! .env.parse "$@" || export "${REPLY[@]}"; }
+
+.env.set() {
+    .env::file load || return
+    local key saved=$__dotenv
+    while (($#)); do
+        key=${1#+}
+        key=${key%%=*}
+        if .env.get "$key"; then
+            REPLY=()
+            if [[ $1 == +* ]]; then
+                shift
+                continue # skip if already found
+            elif [[ $1 == *=* ]]; then
+                __dotenv=${BASH_REMATCH[1]}${BASH_REMATCH[3]}$1$'\n'${BASH_REMATCH[4]#*$'\n'}
+            else
+                __dotenv=${BASH_REMATCH[1]}${BASH_REMATCH[4]#*$'\n'}
+                continue # delete all occurrences
+            fi
+        elif [[ $1 == *=* ]]; then
+            __dotenv+="${1#+}"$'\n'
+        fi
+        shift
+    done
+    [[ $__dotenv == "$saved" ]] || .env::file save
+}
+
+.env.puts() { echo "${1-}" >>"$__dotenv_file" && __dotenv+="$1"$'\n'; }
+
+.env.generate() {
+    .env::arg "key required for generate" "$@" || return
+    .env.get "$1" && return || REPLY=$("${@:2}") || return
+    .env::one "generate: ouptut of '${*:2}' has more than one line" "$REPLY" || return
+    .env.puts "$1=$REPLY"
+}
+
+.env.--file() {
+    .env::arg "filename required for --file" "$@" || return
+    __dotenv_file=$1
+    .env::file load || return
+    (($# < 2)) || .env "${@:2}"
+}
+
+.env::arg() { [[ "${2-}" ]] || {
+    echo "$__dotenv_cmd: $1" >&2
+    return 64
+}; }
+
+.env::one() { [[ "$2" != *$'\n'* ]] || .env::arg "$1"; }
+
+.env::file() {
+    local REPLY=$__dotenv_file
+    case "$1" in
+    load)
+        __dotenv=
+        ! [[ -f "$REPLY" ]] || __dotenv="$(<"$REPLY")"$'\n' || return
+        ;;
+    save)
+        if [[ -L "$REPLY" ]] && declare -F -- realpath.resolved >/dev/null; then
+            realpath.resolved "$REPLY"
+        fi
+        { [[ ! -f "$REPLY" ]] || cp -p "$REPLY" "$REPLY.bak"; } &&
+            printf %s "$__dotenv" >"$REPLY.bak" && mv "$REPLY.bak" "$REPLY"
+        ;;
+    esac
+}
+
 # This is a general-purpose function to ask Yes/No questions in Bash, either
 # with or without a default answer. It keeps repeating the question until it
 # gets a valid answer.
@@ -115,6 +225,19 @@ install() {
         touch azurarelay.env
     fi
 
+    if [[ ! -f .env ]]; then
+        setup-release
+    fi
+
+    if ask "Customize AzuraCast ports?" N; then
+        setup-ports
+    fi
+
+    if ask "Set up LetsEncrypt?" N; then
+        setup-letsencrypt
+    fi
+
+    docker-compose pull
     docker-compose up -d
     docker-compose run --rm --user="azurarelay" relay cli app:setup
     docker cp azurarelay_relay_1:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
@@ -228,21 +351,19 @@ uninstall() {
 }
 
 #
-# Create and link a LetsEncrypt SSL certificate.
-# Usage: ./docker.sh letsencrypt-create domainname.example.com
+# Configure the ports used by AzuraRelay.
 #
-letsencrypt-create() {
-    docker-compose exec --user="azurarelay" relay letsencrypt_connect $*
-    exit
+setup-ports() {
+    envfile-set "AZURARELAY_HTTP_PORT" "80" "Port to use for HTTP connections"
+    envfile-set "AZURARELAY_HTTPS_PORT" "443" "Port to use for HTTPS connections"
 }
 
 #
-# Renew an existing LetsEncrypt SSL certificate
-# Usage: ./docker.sh letsencrypt-renew
+# Configure the settings used by LetsEncrypt.
 #
-letsencrypt-renew() {
-    docker-compose exec --user="azurarelay" relay letsencrypt_renew $*
-    exit
+setup-letsencrypt() {
+    envfile-set "LETSENCRYPT_HOST" "" "Domain name (example.com) or names (example.com,foo.bar) to use with LetsEncrypt"
+    envfile-set "LETSENCRYPT_EMAIL" "" "Optional e-mail address for expiration updates"
 }
 
 $*

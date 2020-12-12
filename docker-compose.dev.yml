@@ -1,13 +1,19 @@
 version: '2.2'
 
+# Meant for use in conjunction with a running AzuraCast instance with its own nginx proxy.
 services:
   relay:
     image: azuracast/azurarelay:latest
     build:
       context: .
     env_file: azurarelay.env
+    environment:
+      APPLICATION_ENV: development
+      VIRTUAL_HOST: azurarelay.local
+    networks:
+      - azuracast_frontend
+      - azuracast_backend
     volumes:
-      - letsencrypt:/etc/letsencrypt
       - ./www:/var/azurarelay/www
       - tmp_data:/var/azurarelay/www_tmp
       - station_data:/var/azurarelay/stations
@@ -70,6 +76,5 @@ services:
      - '18490:8490'
 
 volumes:
-  letsencrypt: {}
   station_data: {}
   tmp_data: {}

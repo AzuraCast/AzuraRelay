@@ -2,7 +2,7 @@
 namespace App\Console\Command;
 
 use App\Console\Command\CommandAbstract;
-use App\Settings;
+use App\Environment;
 use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use AzuraCast\Api\Dto\AdminRelayUpdateDto;
@@ -16,7 +16,7 @@ class NowPlayingCommand extends CommandAbstract
     public function __invoke(
         SymfonyStyle $io,
         Client $api,
-        Settings $settings
+        Environment $environment
     ) {
         $io->title('AzuraRelay Now Playing');
 
@@ -28,7 +28,7 @@ class NowPlayingCommand extends CommandAbstract
             return 1;
         }
 
-        $configDir = dirname($settings[Settings::BASE_DIR]).'/stations';
+        $configDir = $environment->getParentDirectory().'/stations';
         $relayInfoPath = $configDir.'/stations.json';
 
         if (!file_exists($relayInfoPath)) {

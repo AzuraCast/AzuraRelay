@@ -1,8 +1,7 @@
 <?php
 namespace App\Console\Command;
 
-use App\Console\Command\CommandAbstract;
-use App\Settings;
+use App\Environment;
 use AzuraCast\Api\Client;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
@@ -15,7 +14,7 @@ class SetupCommand extends CommandAbstract
         SymfonyStyle $io,
         GuzzleClient $httpClient,
         Client $api,
-        Settings $settings
+        Environment $environment
     ) {
         $io->title('AzuraRelay Setup');
         $io->writeln('Welcome to AzuraRelay! Provide the following items to finish setup.');
@@ -31,10 +30,10 @@ class SetupCommand extends CommandAbstract
         $question->setMaxAttempts(10);
         $question->setValidator(function($value) use ($httpClient) {
             try {
-                $api = \AzuraCast\Api\Client::create($value, null, $httpClient);
+                $api = Client::create($value, null, $httpClient);
                 $np = $api->nowPlaying();
             } catch(\Exception $e) {
-                throw new \RuntimeException(sprintf('Could not connect to AzuraCast instance at %s: %s', $value, $e->getMessage()));
+                throw new \RuntimeException(sprintf('Could not connect to AzuraCast instance at %s: %s', $value, $e->getMessage().' '.$e->getFile().' L'.$e->getLine().': '.$e->getTraceAsString()));
             }
 
             return $value;
@@ -127,7 +126,7 @@ class SetupCommand extends CommandAbstract
             '',
         ];
 
-        $temp_path = $settings[Settings::TEMP_DIR].'/azurarelay.env';
+        $temp_path = $environment->getTempDirectory().'/azurarelay.env';
         file_put_contents($temp_path, implode("\n", $envFile));
 
         $io->note($envFile);

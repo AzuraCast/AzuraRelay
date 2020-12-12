@@ -2,7 +2,7 @@
 namespace App\Console\Command;
 
 use App\Console\Command\CommandAbstract;
-use App\Settings;
+use App\Environment;
 use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use GuzzleHttp\Psr7\Uri;
@@ -16,7 +16,7 @@ class UpdateCommand extends CommandAbstract
 {
     public function __invoke(
         SymfonyStyle $io,
-        Settings $settings,
+        Environment $environment,
         Client $api,
         Supervisor $supervisor
     ) {
@@ -30,7 +30,7 @@ class UpdateCommand extends CommandAbstract
             return 1;
         }
 
-        $configDir = dirname($settings[Settings::BASE_DIR]).'/stations';
+        $configDir = $environment->getParentDirectory().'/stations';
         $supervisorPath = $configDir.'/supervisord.conf';
 
         $relays = $api->admin()->relays()->list();

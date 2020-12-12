@@ -8,20 +8,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class CommandAbstract
 {
-    /** @var Application */
-    protected $application;
+    protected Application $application;
 
-    /**
-     * @param Application $application
-     */
     public function __construct(Application $application)
     {
         $this->application = $application;
     }
 
-    /**
-     * @return Application
-     */
     public function getApplication(): Application
     {
         return $this->application;

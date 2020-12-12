@@ -1,38 +1,42 @@
 <?php
 return [
     // URL Router helper
-    App\Http\Router::class => function (\Slim\App $app, App\Settings $settings) {
+    App\Http\Router::class => function (Slim\App $app, App\Environment $environment) {
         $route_parser = $app->getRouteCollector()->getRouteParser();
-        return new App\Http\Router($settings, $route_parser);
+        return new App\Http\Router($environment, $route_parser);
     },
     App\Http\RouterInterface::class => DI\Get(App\Http\Router::class),
-
-    // Error handler
-    App\Http\ErrorHandler::class => DI\autowire(),
-    Slim\Interfaces\ErrorHandlerInterface::class => DI\Get(App\Http\ErrorHandler::class),
 
     // HTTP client
     GuzzleHttp\Client::class => function (Psr\Log\LoggerInterface $logger) {
         $stack = GuzzleHttp\HandlerStack::create();
 
-        $stack->unshift(function (callable $handler) {
-            return function (Psr\Http\Message\RequestInterface $request, array $options) use ($handler) {
-                $options[GuzzleHttp\RequestOptions::VERIFY] = Composer\CaBundle\CaBundle::getSystemCaRootBundlePath();
-                return $handler($request, $options);
-            };
-        }, 'ssl_verify');
+        $stack->unshift(
+            function (callable $handler) {
+                return function (Psr\Http\Message\RequestInterface $request, array $options) use ($handler) {
+                    $options[GuzzleHttp\RequestOptions::VERIFY] = Composer\CaBundle\CaBundle::getSystemCaRootBundlePath(
+                    );
+                    return $handler($request, $options);
+                };
+            },
+            'ssl_verify'
+        );
 
-        $stack->push(GuzzleHttp\Middleware::log(
-            $logger,
-            new GuzzleHttp\MessageFormatter('HTTP client {method} call to {uri} produced response {code}'),
-            Monolog\Logger::DEBUG
-        ));
+        $stack->push(
+            GuzzleHttp\Middleware::log(
+                $logger,
+                new GuzzleHttp\MessageFormatter('HTTP client {method} call to {uri} produced response {code}'),
+                Psr\Log\LogLevel::DEBUG
+            )
+        );
 
-        return new GuzzleHttp\Client([
-            'handler' => $stack,
-            GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
-            GuzzleHttp\RequestOptions::TIMEOUT => 3.0,
-        ]);
+        return new GuzzleHttp\Client(
+            [
+                'handler' => $stack,
+                GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
+                GuzzleHttp\RequestOptions::TIMEOUT => 3.0,
+            ]
+        );
     },
 
     // Console
@@ -59,17 +63,19 @@ return [
     },
 
     // Monolog Logger
-    Monolog\Logger::class => function (App\Settings $settings) {
-        $logger = new Monolog\Logger($settings[App\Settings::APP_NAME] ?? 'app');
-        $logging_level = $settings->isProduction() ? Psr\Log\LogLevel::INFO : Psr\Log\LogLevel::DEBUG;
+    Monolog\Logger::class => function (App\Environment $environment) {
+        $logger = new Monolog\Logger($environment->getAppName());
 
-        if ($settings[App\Settings::IS_DOCKER] || $settings[App\Settings::IS_CLI]) {
-            $log_stderr = new Monolog\Handler\StreamHandler('php://stderr', $logging_level, true);
-            $logger->pushHandler($log_stderr);
-        }
+        $loggingLevel = $environment->isProduction() ? Psr\Log\LogLevel::NOTICE : Psr\Log\LogLevel::DEBUG;
 
-        $log_file = new Monolog\Handler\StreamHandler($settings[App\Settings::TEMP_DIR] . '/app.log',
-            $logging_level, true);
+        $log_stderr = new Monolog\Handler\StreamHandler('php://stderr', $loggingLevel, true);
+        $logger->pushHandler($log_stderr);
+
+        $log_file = new Monolog\Handler\StreamHandler(
+            $environment->getTempDirectory() . '/app.log',
+            $loggingLevel,
+            true
+        );
         $logger->pushHandler($log_file);
 
         return $logger;
@@ -85,17 +91,15 @@ return [
     },
 
     Supervisor\Supervisor::class => function() {
-        $guzzle_client = new \GuzzleHttp\Client();
-        $client = new \fXmlRpc\Client(
+        $client = new fXmlRpc\Client(
             'http://127.0.0.1:9001/RPC2',
-            new \fXmlRpc\Transport\HttpAdapterTransport(
-                new \Http\Message\MessageFactory\GuzzleMessageFactory(),
-                new \Http\Adapter\Guzzle6\Client($guzzle_client)
+            new fXmlRpc\Transport\PsrTransport(
+                new Http\Factory\Guzzle\RequestFactory,
+                new GuzzleHttp\Client
             )
         );
 
-        $connector = new \Supervisor\Connector\XmlRpc($client);
-        $supervisor = new \Supervisor\Supervisor($connector);
+        $supervisor = new Supervisor\Supervisor($client);
 
         if (!$supervisor->isConnected()) {
             throw new \App\Exception(sprintf('Could not connect to supervisord.'));

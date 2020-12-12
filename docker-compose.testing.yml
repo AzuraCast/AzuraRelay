@@ -8,11 +8,9 @@ services:
     environment:
       APPLICATION_ENV: testing
     volumes:
-      - letsencrypt:/etc/letsencrypt
       - tmp_data:/var/azurarelay/www_tmp
       - station_data:/var/azurarelay/stations
 
 volumes:
-  letsencrypt: {}
   station_data: {}
   tmp_data: {}

@@ -1,7 +1,6 @@
 <?php
 namespace App\Middleware;
 
-use App\Http\RequestHelper;
 use App\Http\RouterInterface;
 use App\Http\ServerRequest;
 use Psr\Http\Message\ResponseInterface;

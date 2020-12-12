@@ -1,11 +1,14 @@
 <?php
+
 namespace App;
 
 use App\Traits\AvailableStaticallyTrait;
 
-class Settings extends Collection
+class Environment
 {
     use AvailableStaticallyTrait;
+
+    protected array $data = [];
 
     // Environments
     public const ENV_DEVELOPMENT = 'development';
@@ -13,51 +16,49 @@ class Settings extends Collection
     public const ENV_PRODUCTION = 'production';
 
     // Core settings values
-    public const APP_NAME = 'name';
-    public const APP_ENV = 'app_env';
+    public const APP_NAME = 'APP_NAME';
+    public const APP_ENV = 'APPLICATION_ENV';
 
-    public const BASE_DIR = 'base_dir';
-    public const TEMP_DIR = 'temp_dir';
-    public const CONFIG_DIR = 'config_dir';
-    public const VIEWS_DIR = 'views_dir';
-    public const DOCTRINE_OPTIONS = 'doctrine_options';
-    public const IS_DOCKER = 'is_docker';
-    public const IS_CLI = 'is_cli';
+    public const BASE_DIR = 'BASE_DIR';
+    public const TEMP_DIR = 'TEMP_DIR';
+    public const CONFIG_DIR = 'CONFIG_DIR';
+    public const VIEWS_DIR = 'VIEWS_DIR';
 
-    public const BASE_URL = 'base_url';
-    public const ASSETS_URL = 'assets_url';
-
-    public const ENABLE_DATABASE = 'enable_database';
-    public const ENABLE_REDIS = 'enable_redis';
+    public const IS_DOCKER = 'IS_DOCKER';
+    public const IS_CLI = 'IS_CLI';
 
     // Default settings
-    protected $data = [
-        self::APP_NAME => 'Application',
+    protected array $defaults = [
+        self::APP_NAME => 'AzuraRelay',
         self::APP_ENV => self::ENV_PRODUCTION,
 
         self::IS_DOCKER => true,
         self::IS_CLI => ('cli' === PHP_SAPI),
-
-        self::ASSETS_URL => '/static',
-
-        self::ENABLE_DATABASE => true,
-        self::ENABLE_REDIS => true,
     ];
+
+    public function __construct(array $elements = [])
+    {
+        $this->data = array_merge($this->defaults, $elements);
+    }
+
+    public function getAppEnvironment(): string
+    {
+        return $this->data[self::APP_ENV] ?? self::ENV_PRODUCTION;
+    }
 
     public function isProduction(): bool
     {
-        if (isset($this->data[self::APP_ENV])) {
-            return (self::ENV_PRODUCTION === $this->data[self::APP_ENV]);
-        }
-        return true;
+        return self::ENV_PRODUCTION === $this->getAppEnvironment();
     }
 
     public function isTesting(): bool
     {
-        if (isset($this->data[self::APP_ENV])) {
-            return (self::ENV_TESTING === $this->data[self::APP_ENV]);
-        }
-        return false;
+        return self::ENV_TESTING === $this->getAppEnvironment();
+    }
+
+    public function isDevelopment(): bool
+    {
+        return self::ENV_DEVELOPMENT === $this->getAppEnvironment();
     }
 
     public function isDocker(): bool
@@ -70,14 +71,14 @@ class Settings extends Collection
         return $this->data[self::IS_CLI] ?? ('cli' === PHP_SAPI);
     }
 
-    public function enableDatabase(): bool
+    public function getAppName(): string
     {
-        return (bool)($this->data[self::ENABLE_DATABASE] ?? true);
+        return $this->data[self::APP_NAME] ?? 'Application';
     }
 
-    public function enableRedis(): bool
+    public function getAssetUrl(): ?string
     {
-        return (bool)($this->data[self::ENABLE_REDIS] ?? true);
+        return $this->data[self::ASSET_URL] ?? '';
     }
 
     /**
@@ -110,5 +111,13 @@ class Settings extends Collection
     public function getViewsDirectory(): string
     {
         return $this->data[self::VIEWS_DIR];
+    }
+
+    /**
+     * @return string The parent directory the application is within, i.e. `/var/azuracast`.
+     */
+    public function getParentDirectory(): string
+    {
+        return dirname($this->getBaseDirectory());
     }
 }

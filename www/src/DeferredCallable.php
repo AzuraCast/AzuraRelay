@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deferred Callable
  * Used from:
@@ -19,10 +20,7 @@ class DeferredCallable
      */
     protected $callable;
 
-    /**
-     * @var CallableResolverInterface|null
-     */
-    protected $callableResolver;
+    protected ?CallableResolverInterface $callableResolver;
 
     /**
      * @param callable|string $callable
@@ -34,6 +32,9 @@ class DeferredCallable
         $this->callableResolver = $resolver;
     }
 
+    /**
+     * @return mixed
+     */
     public function __invoke(...$args)
     {
         /** @var callable $callable */

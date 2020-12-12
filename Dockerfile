@@ -52,4 +52,16 @@ RUN composer dump-autoload --optimize --classmap-authoritative
 #
 
 USER root
+
+EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
+        8100 8110 8120 8130 8140 8150 8160 8170 8180 8190 \
+        8200 8210 8220 8230 8240 8250 8260 8270 8280 8290 \
+        8300 8310 8320 8330 8340 8350 8360 8370 8380 8390 \
+        8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
+
+# Nginx Proxy environment variables.
+ENV VIRTUAL_HOST="azurarelay.local" \
+    HTTPS_METHOD="noredirect" \
+    APPLICATION_ENV="production"
+
 CMD ["/usr/local/bin/my_init"]

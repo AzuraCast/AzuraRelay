@@ -1,11 +1,40 @@
 version: '2.2'
 
 services:
+  nginx_proxy:
+    image: "azuracast/azuracast_nginx_proxy:latest"
+    ports:
+      - '${AZURARELAY_HTTP_PORT:-80}:80'
+      - '${AZURARELAY_HTTPS_PORT:-443}:443'
+    volumes:
+      - letsencrypt:/etc/nginx/certs
+      - nginx_proxy_vhosts:/etc/nginx/vhost.d
+      - letsencrypt_html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      DEFAULT_HOST: ${LETSENCRYPT_HOST:-azurarelay.local}
+    networks:
+      - frontend
+    depends_on:
+      - relay
+    restart: always
+
+  nginx_proxy_letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion:latest
+    volumes_from:
+      - nginx_proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      DEFAULT_EMAIL: ${LETSENCRYPT_EMAIL}
+    networks:
+      - frontend
+    restart: always
+
   relay:
     image: azuracast/azurarelay:latest
     env_file: azurarelay.env
     volumes:
-      - letsencrypt:/etc/letsencrypt
       - tmp_data:/var/azurarelay/www_tmp
       - station_data:/var/azurarelay/stations
     restart: always
@@ -13,9 +42,9 @@ services:
       options:
         max-size: "1m"
         max-file: "5"
+    networks:
+      - frontend
     ports:
-     - '${AZURARELAY_HTTP_PORT:-80}:80'
-     - '${AZURARELAY_HTTPS_PORT:-443}:443'
      - '8000:8000'
      - '8010:8010'
      - '8020:8020'
@@ -66,7 +95,13 @@ services:
      - '8480:8480'
      - '8490:8490'
 
+networks:
+  frontend:
+    driver: bridge
+
 volumes:
-  letsencrypt: {}
-  station_data: {}
-  tmp_data: {}
+  nginx_proxy_vhosts: { }
+  letsencrypt: { }
+  letsencrypt_html: { }
+  station_data: { }
+  tmp_data: { }

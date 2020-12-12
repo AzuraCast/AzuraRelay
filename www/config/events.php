@@ -1,15 +1,9 @@
 <?php
 use App\Event;
-use App\Console\Command;
-use App\Settings;
+use App\Environment;
 use App\Middleware;
-use Doctrine\Migrations\Configuration\Configuration;
-use Doctrine\Migrations\Tools\Console\ConsoleRunner;
-use Doctrine\Migrations\Tools\Console\Helper\ConfigurationHelper;
-use Doctrine\ORM\EntityManager;
-use Slim\Interfaces\ErrorHandlerInterface;
 
-return function (\App\EventDispatcher $dispatcher)
+return function (App\EventDispatcher $dispatcher)
 {
     $dispatcher->addListener(Event\BuildConsoleCommands::class, function(Event\BuildConsoleCommands $event) {
         $console = $event->getConsole();
@@ -25,11 +19,11 @@ return function (\App\EventDispatcher $dispatcher)
         // Load app-specific route configuration.
         $container = $app->getContainer();
 
-        /** @var Settings $settings */
-        $settings = $container->get(Settings::class);
+        /** @var Environment $environment */
+        $environment = $container->get(Environment::class);
 
-        if (file_exists($settings[Settings::CONFIG_DIR] . '/routes.php')) {
-            call_user_func(include($settings[Settings::CONFIG_DIR] . '/routes.php'), $app);
+        if (file_exists($environment->getConfigDirectory() . '/routes.php')) {
+            call_user_func(include($environment->getConfigDirectory() . '/routes.php'), $app);
         }
 
         // Request injection middlewares.
@@ -44,7 +38,13 @@ return function (\App\EventDispatcher $dispatcher)
         $app->add(new Middleware\ApplyXForwardedProto);
 
         // Error handling, which should always be near the "last" element.
-        $errorMiddleware = $app->addErrorMiddleware(!$settings->isProduction(), true, true);
-        $errorMiddleware->setDefaultErrorHandler(ErrorHandlerInterface::class);
+        $logger = $container->get(Psr\Log\LoggerInterface::class);
+
+        $app->addErrorMiddleware(
+            !$environment->isProduction(),
+            true,
+            true,
+            $logger
+        );
     });
 };

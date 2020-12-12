@@ -6,33 +6,31 @@
   "require": {
     "php": ">=7.4",
     "ext-json": "*",
+    "ext-redis": "*",
     "ext-xmlwriter": "*",
-
     "azuracast/nowplaying": "^1.1",
     "azuracast/php-api-client": "dev-master",
     "cakephp/chronos": "^1.2",
     "composer/ca-bundle": "^1.2",
-    "guzzlehttp/guzzle": ">6.0",
+    "doctrine/annotations": "^1.11",
+    "guzzlehttp/guzzle": "^7",
     "http-interop/http-factory-guzzle": "^1.0",
     "laminas/laminas-config": "^3.3",
-    "lstrojny/fxmlrpc": "^0.14.0",
+    "lstrojny/fxmlrpc": "dev-master",
     "mnapoli/silly-php-di": "^1.2",
     "monolog/monolog": "^2",
     "php-di/php-di": "^6.0",
     "php-di/slim-bridge": "^3.0",
-    "php-http/guzzle6-adapter": "^1.1",
-    "php-http/httplug": "^1.0",
-    "php-http/message": "^1.4",
     "php-http/socket-client": "^1.2",
-    "slim/http": "^0.8",
+    "psr/http-factory": "^1.0",
+    "slim/http": "^1.2",
     "slim/slim": "^4.2",
-    "supervisorphp/supervisor": "^3.0",
-    "symfony/console": "^4.3",
-    "symfony/event-dispatcher": "^4.3"
+    "supervisorphp/supervisor": "^4.0",
+    "symfony/console": "^5",
+    "symfony/event-dispatcher": "^5"
   },
   "require-dev": {
-    "phpstan/phpstan": "^0.11.1",
-    "phpstan/phpstan-strict-rules": "^0.11.0",
+    "phpstan/phpstan": "^0.12",
     "roave/security-advisories": "dev-master",
     "overtrue/phplint": "^1.1"
   },
@@ -57,7 +55,9 @@
     }
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "discard-changes": true,
+    "sort-packages": true
   },
   "prefer-stable": true,
   "minimum-stability": "dev"
