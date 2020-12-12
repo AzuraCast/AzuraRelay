@@ -7,24 +7,24 @@
     "php": ">=7.4",
     "ext-json": "*",
     "ext-xmlwriter": "*",
-
     "azuracast/nowplaying": "^1.1",
-    "azuracast/php-api-client": "dev-master",
+    "azuracast/php-api-client": "^2.0",
     "cakephp/chronos": "^1.2",
     "composer/ca-bundle": "^1.2",
-    "guzzlehttp/guzzle": ">6.0",
+    "guzzlehttp/guzzle": ">7.0",
     "http-interop/http-factory-guzzle": "^1.0",
     "laminas/laminas-config": "^3.3",
-    "lstrojny/fxmlrpc": "^0.14.0",
+    "lstrojny/fxmlrpc": "^0.15.0",
     "mnapoli/silly-php-di": "^1.2",
     "monolog/monolog": "^2",
     "php-di/php-di": "^6.0",
     "php-di/slim-bridge": "^3.0",
-    "php-http/guzzle6-adapter": "^1.1",
-    "php-http/httplug": "^1.0",
+    "php-http/guzzle7-adapter": "^0.1.1",
+    "php-http/httplug": "^2.0",
     "php-http/message": "^1.4",
-    "php-http/socket-client": "^1.2",
-    "slim/http": "^0.8",
+    "php-http/socket-client": "^2.0",
+    "psr/http-factory": "^1.0",
+    "slim/http": "^1.2",
     "slim/slim": "^4.2",
     "supervisorphp/supervisor": "^3.0",
     "symfony/console": "^4.3",
@@ -57,7 +57,8 @@
     }
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "sort-packages": true
   },
   "prefer-stable": true,
   "minimum-stability": "dev"
