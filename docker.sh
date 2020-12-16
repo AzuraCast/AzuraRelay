@@ -149,6 +149,23 @@ ask() {
     done
 }
 
+# Generate a prompt to set an environment file value.
+envfile-set() {
+    local VALUE INPUT
+
+    .env --file .env
+
+    .env get "$1"
+    VALUE=${REPLY:-$2}
+
+    echo -n "$3 [$VALUE]: "
+    read INPUT
+
+    VALUE=${INPUT:-$VALUE}
+
+    .env set "${1}=${VALUE}"
+}
+
 #
 # Run the initial installer of Docker and AzuraCast.
 # Usage: ./docker.sh install
@@ -225,11 +242,7 @@ install() {
         touch azurarelay.env
     fi
 
-    if [[ ! -f .env ]]; then
-        setup-release
-    fi
-
-    if ask "Customize AzuraCast ports?" N; then
+    if ask "Customize AzuraRelay ports?" N; then
         setup-ports
     fi
 
