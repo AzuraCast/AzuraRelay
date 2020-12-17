@@ -34,6 +34,10 @@ services:
   relay:
     image: azuracast/azurarelay:latest
     env_file: azurarelay.env
+    environment:
+      VIRTUAL_HOST: ${LETSENCRYPT_HOST:-azurarelay.local}
+      LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
     volumes:
       - tmp_data:/var/azurarelay/www_tmp
       - station_data:/var/azurarelay/stations
