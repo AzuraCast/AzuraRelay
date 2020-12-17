@@ -7,6 +7,7 @@ use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use AzuraCast\Api\Dto\AdminRelayUpdateDto;
 use GuzzleHttp\Psr7\Uri;
+use NowPlaying\Adapter\Icecast;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -20,8 +21,8 @@ class NowPlayingCommand extends CommandAbstract
     ) {
         $io->title('AzuraRelay Now Playing');
 
-        $baseUrl = getenv('AZURACAST_BASE_URL');
-        $apiKey = getenv('AZURACAST_API_KEY');
+        $baseUrl = $environment->getParentBaseUrl();
+        $apiKey = $environment->getParentApiKey();
 
         if (empty($baseUrl) || empty($apiKey)) {
             $io->error('Base URL or API key is not specified. Please supply these values in "azurarelay.env" to continue!.');
@@ -45,7 +46,7 @@ class NowPlayingCommand extends CommandAbstract
             $localUri = (new Uri('http://localhost'))
                 ->withPort($relay->getPort());
 
-            $npAdapter = new \NowPlaying\Adapter\Icecast($localUri);
+            $npAdapter = new Icecast($localUri);
             $npAdapter->setAdminPassword($relay->getAdminPassword());
 
             foreach($relay->getMounts() as $mount) {
@@ -62,9 +63,9 @@ class NowPlayingCommand extends CommandAbstract
 
         if (!empty($np)) {
             $api->admin()->relays()->update(new AdminRelayUpdateDto(
-                getenv('AZURARELAY_BASE_URL'),
-                getenv('AZURARELAY_NAME'),
-                (bool)getenv('AZURARELAY_IS_PUBLIC'),
+                $environment->getRelayBaseUrl(),
+                $environment->getRelayName(),
+                $environment->relayIsPublic(),
                 $np
             ));
         }

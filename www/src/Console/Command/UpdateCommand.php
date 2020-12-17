@@ -22,8 +22,8 @@ class UpdateCommand extends CommandAbstract
     ) {
         $io->title('AzuraRelay Updater');
 
-        $baseUrl = getenv('AZURACAST_BASE_URL');
-        $apiKey = getenv('AZURACAST_API_KEY');
+        $baseUrl = $environment->getParentBaseUrl();
+        $apiKey = $environment->getParentApiKey();
 
         if (empty($baseUrl) || empty($apiKey)) {
             $io->error('Base URL or API key is not specified. Please supply these values in "azurarelay.env" to continue!.');

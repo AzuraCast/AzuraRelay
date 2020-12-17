@@ -27,6 +27,13 @@ class Environment
     public const IS_DOCKER = 'IS_DOCKER';
     public const IS_CLI = 'IS_CLI';
 
+    public const PARENT_BASE_URL = 'AZURACAST_BASE_URL';
+    public const PARENT_API_KEY = 'AZURACAST_API_KEY';
+
+    public const RELAY_BASE_URL = 'AZURARELAY_BASE_URL';
+    public const RELAY_NAME = 'AZURARELAY_NAME';
+    public const RELAY_IS_PUBLIC = 'AZURARELAY_IS_PUBLIC';
+
     // Default settings
     protected array $defaults = [
         self::APP_NAME => 'AzuraRelay',
@@ -34,6 +41,8 @@ class Environment
 
         self::IS_DOCKER => true,
         self::IS_CLI => ('cli' === PHP_SAPI),
+
+        self::RELAY_NAME => 'AzuraRelay',
     ];
 
     public function __construct(array $elements = [])
@@ -114,5 +123,30 @@ class Environment
     public function getParentDirectory(): string
     {
         return dirname($this->getBaseDirectory());
+    }
+
+    public function getParentBaseUrl(): ?string
+    {
+        return $this->data[self::PARENT_BASE_URL] ?? null;
+    }
+
+    public function getParentApiKey(): ?string
+    {
+        return $this->data[self::PARENT_API_KEY] ?? null;
+    }
+
+    public function getRelayBaseUrl(): ?string
+    {
+        return $this->data[self::RELAY_BASE_URL] ?? null;
+    }
+
+    public function getRelayName(): ?string
+    {
+        return $this->data[self::RELAY_NAME] ?? null;
+    }
+
+    public function relayIsPublic(): bool
+    {
+        return (bool)($this->data[self::RELAY_IS_PUBLIC] ?? false);
     }
 }
