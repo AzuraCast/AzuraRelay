@@ -40,26 +40,16 @@ return [
     },
 
     // Console
-    App\Console\Application::class => function (DI\Container $di, App\EventDispatcher $dispatcher) {
-        $console = new App\Console\Application('AzuraRelay Command Line Utility', '1.0.0', $di);
+    App\Console\Application::class => function (DI\Container $di, Psr\Log\LoggerInterface $logger) {
+        $eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+        $eventDispatcher->addSubscriber(new App\Console\ErrorHandler($logger));
 
-        // Trigger an event for the core app and all plugins to build their CLI commands.
-        $event = new App\Event\BuildConsoleCommands($console);
-        $dispatcher->dispatch($event);
+        $console = new App\Console\Application('AzuraRelay Command Line Utility', '1.0.0', $di);
+        $console->setDispatcher($eventDispatcher);
+
+        call_user_func(include(__DIR__ . '/cli.php'), $console);
 
         return $console;
-    },
-
-    // Event Dispatcher
-    App\EventDispatcher::class => function (Slim\App $app) {
-        $dispatcher = new App\EventDispatcher($app->getCallableResolver());
-
-        // Register application default events.
-        if (file_exists(__DIR__ . '/events.php')) {
-            call_user_func(include(__DIR__ . '/events.php'), $dispatcher);
-        }
-
-        return $dispatcher;
     },
 
     // Monolog Logger
@@ -106,5 +96,18 @@ return [
         }
 
         return $supervisor;
+    },
+
+    // NowPlaying Adapter factory
+    NowPlaying\Adapter\AdapterFactory::class => function (
+        GuzzleHttp\Client $httpClient,
+        Psr\Log\LoggerInterface $logger
+    ) {
+        return new NowPlaying\Adapter\AdapterFactory(
+            new Http\Factory\Guzzle\UriFactory,
+            new Http\Factory\Guzzle\RequestFactory,
+            $httpClient,
+            $logger
+        );
     },
 ];

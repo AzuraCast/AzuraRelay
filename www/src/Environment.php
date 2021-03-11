@@ -2,12 +2,8 @@
 
 namespace App;
 
-use App\Traits\AvailableStaticallyTrait;
-
 class Environment
 {
-    use AvailableStaticallyTrait;
-
     protected array $data = [];
 
     // Environments

@@ -4,8 +4,7 @@ ini_set('display_errors', 1);
 
 $autoloader = require dirname(__DIR__).'/vendor/autoload.php';
 
-$app = App\AppFactory::create($autoloader, [
+$app = App\AppFactory::createApp($autoloader, [
     App\Environment::BASE_DIR => dirname(__DIR__),
 ]);
-
 $app->run();

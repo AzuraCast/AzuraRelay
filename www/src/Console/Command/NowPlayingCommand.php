@@ -7,6 +7,7 @@ use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use AzuraCast\Api\Dto\AdminRelayUpdateDto;
 use GuzzleHttp\Psr7\Uri;
+use NowPlaying\Adapter\AdapterFactory;
 use NowPlaying\Adapter\Icecast;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,6 +18,7 @@ class NowPlayingCommand extends CommandAbstract
     public function __invoke(
         SymfonyStyle $io,
         Client $api,
+        AdapterFactory $adapterFactory,
         Environment $environment
     ) {
         $io->title('AzuraRelay Now Playing');
@@ -37,27 +39,21 @@ class NowPlayingCommand extends CommandAbstract
             return 1;
         }
 
-        $relaysRaw = json_decode(file_get_contents($relayInfoPath), true);
+        $relaysRaw = json_decode(file_get_contents($relayInfoPath), true, 512, JSON_THROW_ON_ERROR);
 
         $np = [];
         foreach($relaysRaw as $relayRaw) {
             $relay = AdminRelayDto::fromArray($relayRaw);
 
             $localUri = (new Uri('http://localhost'))
-                ->withPort($relay->getPort());
+                ->withPort($relay->getPort())
+                ->withUserInfo('admin:'.$relay->getAdminPassword());
 
-            $npAdapter = new Icecast($localUri);
-            $npAdapter->setAdminPassword($relay->getAdminPassword());
+            $npAdapter = $adapterFactory->getAdapter(AdapterFactory::ADAPTER_ICECAST, $localUri);
 
             foreach($relay->getMounts() as $mount) {
-                try {
-                    $np_mount = $npAdapter->getNowPlaying($mount->getPath());
-                    $np_mount['listeners']['clients'] = $npAdapter->getClients($mount->getPath(), true);
-
-                    $np[$relay->getId()][$mount->getPath()] = $np_mount;
-                } catch(\NowPlaying\Exception $e) {
-                    $io->error(sprintf('NowPlaying adapter error: %s', $e->getMessage()));
-                }
+                $np_mount = $npAdapter->getNowPlaying($mount->getPath(), true);
+                $np[$relay->getId()][$mount->getPath()] = $np_mount;
             }
         }
 

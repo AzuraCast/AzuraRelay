@@ -230,12 +230,12 @@ install() {
 
     if [[ ! -f .env ]]; then
         echo "Writing default .env file..."
-        curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/.env -o .env
+        curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/main/.env -o .env
     fi
 
     if [[ ! -f docker-compose.yml ]]; then
         echo "Retrieving default docker-compose.yml file..."
-        curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker-compose.sample.yml -o docker-compose.yml
+        curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/main/docker-compose.sample.yml -o docker-compose.yml
     fi
 
     if [[ ! -f azurarelay.env ]]; then
@@ -266,7 +266,7 @@ install() {
 # Usage: ./docker.sh update
 #
 update() {
-    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker-compose.sample.yml -o docker-compose.new.yml
+    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/main/docker-compose.sample.yml -o docker-compose.new.yml
 
     FILES_MATCH="$(cmp --silent docker-compose.yml docker-compose.new.yml; echo $?)"
     UPDATE_NEW=0
@@ -306,7 +306,7 @@ update() {
 # Usage: ./docker.sh update-self
 #
 update-self() {
-    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker.sh -o docker.sh
+    curl -fsSL https://raw.githubusercontent.com/AzuraCast/AzuraRelay/main/docker.sh -o docker.sh
     chmod a+x docker.sh
 
     echo "New Docker utility script downloaded."

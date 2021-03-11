@@ -7,6 +7,7 @@ use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use GuzzleHttp\Psr7\Uri;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Supervisor\Supervisor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,12 +15,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class UpdateCommand extends CommandAbstract
 {
+    protected LoggerInterface $logger;
+
     public function __invoke(
         SymfonyStyle $io,
+        LoggerInterface $logger,
         Environment $environment,
         Client $api,
         Supervisor $supervisor
     ) {
+        $this->logger = $logger;
+
         $io->title('AzuraRelay Updater');
 
         $baseUrl = $environment->getParentBaseUrl();
@@ -119,9 +125,6 @@ class UpdateCommand extends CommandAbstract
                     '@source' => '/',
                     '@dest' => '/status.xsl',
                 ],
-                'ssl-private-key' => '/etc/letsencrypt/ssl.key',
-                'ssl-certificate' => '/etc/letsencrypt/ssl.crt',
-                'ssl-allowed-ciphers' => 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS',
                 'x-forwarded-for' => '127.0.0.1',
                 'all-x-forwarded-for' => '1',
             ],
@@ -188,8 +191,6 @@ class UpdateCommand extends CommandAbstract
      */
     protected function reloadSupervisor(Supervisor $supervisor): array
     {
-        $logger = \App\Logger::getInstance();
-
         $reload_result = $supervisor->reloadConfig();
 
         $affected_groups = [];
@@ -197,7 +198,7 @@ class UpdateCommand extends CommandAbstract
         [$reload_added, $reload_changed, $reload_removed] = $reload_result[0];
 
         if (!empty($reload_removed)) {
-            $logger->debug('Removing supervisor groups.', $reload_removed);
+            $this->logger->debug('Removing supervisor groups.', $reload_removed);
 
             foreach ($reload_removed as $group) {
                 $affected_groups[] = $group;
@@ -207,7 +208,7 @@ class UpdateCommand extends CommandAbstract
         }
 
         if (!empty($reload_changed)) {
-            $logger->debug('Reloading modified supervisor groups.', $reload_changed);
+            $this->logger->debug('Reloading modified supervisor groups.', $reload_changed);
 
             foreach ($reload_changed as $group) {
                 $affected_groups[] = $group;
@@ -218,7 +219,7 @@ class UpdateCommand extends CommandAbstract
         }
 
         if (!empty($reload_added)) {
-            $logger->debug('Adding new supervisor groups.', $reload_added);
+            $this->logger->debug('Adding new supervisor groups.', $reload_added);
 
             foreach ($reload_added as $group) {
                 $affected_groups[] = $group;
