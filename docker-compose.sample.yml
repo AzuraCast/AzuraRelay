@@ -36,7 +36,7 @@ services:
     restart : always
 
   relay:
-    image: azuracast/azurarelay:${AZURARELAY_VERSION:-latest}"
+    image: "azuracast/azurarelay:${AZURARELAY_VERSION:-latest}"
     env_file: azurarelay.env
     environment:
       VIRTUAL_HOST : ${LETSENCRYPT_HOST:-azurarelay.local}
