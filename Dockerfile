@@ -6,7 +6,7 @@ FROM azuracast/icecast-kh-ac:latest AS icecast
 #
 # Base image
 #
-FROM ubuntu:focal
+FROM ubuntu:20.10
 
 # Set time zone
 ENV TZ="UTC"
