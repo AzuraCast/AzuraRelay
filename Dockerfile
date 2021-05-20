@@ -6,7 +6,7 @@ FROM azuracast/icecast-kh-ac:latest AS icecast
 #
 # Base image
 #
-FROM ubuntu:focal
+FROM ubuntu:groovy-20210416
 
 # Set time zone
 ENV TZ="UTC"
