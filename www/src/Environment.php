@@ -143,6 +143,24 @@ class Environment
 
     public function relayIsPublic(): bool
     {
-        return (bool)($this->data[self::RELAY_IS_PUBLIC] ?? false);
+        return self::envToBool($this->data[self::RELAY_IS_PUBLIC] ?? false);
+    }
+
+    public static function envToBool($value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+        if (is_int($value)) {
+            return 0 !== $value;
+        }
+        if (null === $value) {
+            return false;
+        }
+
+        $value = (string)$value;
+        return str_starts_with(strtolower($value), 'y')
+            || 'true' === strtolower($value)
+            || '1' === $value;
     }
 }
