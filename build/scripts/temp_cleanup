@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-/usr/sbin/tmpreaper 12h --protect '.tmpreaper' --verbose /tmp/nginx_client /tmp/nginx_fastcgi_temp /var/azurarelay/stations/*/temp > /proc/1/fd/1 2> /proc/1/fd/2
+exec /usr/sbin/tmpreaper 12h --protect '.tmpreaper' --verbose \
+    /tmp/app_nginx_client \
+    /tmp/app_fastcgi_temp \
+    > /proc/1/fd/1 2> /proc/1/fd/2

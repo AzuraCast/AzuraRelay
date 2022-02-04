@@ -5,17 +5,31 @@ use App\Environment;
 use AzuraCast\Api\Client;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SetupCommand extends CommandAbstract
+#[AsCommand(
+    name: 'app:setup',
+    description: 'Run initial setup process.'
+)]
+class SetupCommand extends Command
 {
-    public function __invoke(
-        SymfonyStyle $io,
-        GuzzleClient $httpClient,
-        Client $api,
-        Environment $environment
+    public function __construct(
+        protected GuzzleClient $httpClient,
+        protected Client $api,
+        protected Environment $environment
     ) {
+        parent::__construct();
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+
         $io->title('AzuraRelay Setup');
         $io->writeln('Welcome to AzuraRelay! Provide the following items to finish setup.');
 
@@ -28,12 +42,18 @@ class SetupCommand extends CommandAbstract
 
         $question = new Question\Question('AzuraCast Installation URL', getenv('AZURACAST_BASE_URL'));
         $question->setMaxAttempts(10);
-        $question->setValidator(function($value) use ($httpClient) {
+        $question->setValidator(function ($value) {
             try {
-                $api = Client::create($value, null, $httpClient);
+                $api = Client::create($value, null, $this->httpClient);
                 $np = $api->nowPlaying();
-            } catch(\Exception $e) {
-                throw new \RuntimeException(sprintf('Could not connect to AzuraCast instance at %s: %s', $value, $e->getMessage().' '.$e->getFile().' L'.$e->getLine().': '.$e->getTraceAsString()));
+            } catch (\Exception $e) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Could not connect to AzuraCast instance at %s: %s',
+                        $value,
+                        $e->getMessage() . ' ' . $e->getFile() . ' L' . $e->getLine() . ': ' . $e->getTraceAsString()
+                    )
+                );
             }
 
             return $value;
@@ -58,12 +78,14 @@ class SetupCommand extends CommandAbstract
 
         $question = new Question\Question('AzuraCast API Key', getenv('AZURACAST_API_KEY'));
         $question->setMaxAttempts(10);
-        $question->setValidator(function($value) use ($baseUrl, $httpClient) {
-            $api = Client::create($baseUrl, $value, $httpClient);
+        $question->setValidator(function ($value) use ($baseUrl) {
+            $api = Client::create($baseUrl, $value, $this->httpClient);
             $relays = $api->admin()->relays()->list();
 
             if (0 === count($relays)) {
-                throw new \RuntimeException('No relayable streams were found on the remote server. Make sure your account has permission to "Manage Broadcasting" for the station you want to relay.');
+                throw new \RuntimeException(
+                    'No relayable streams were found on the remote server. Make sure your account has permission to "Manage Broadcasting" for the station you want to relay.'
+                );
             }
 
             return $value;
@@ -126,7 +148,7 @@ class SetupCommand extends CommandAbstract
             '',
         ];
 
-        $temp_path = $environment->getTempDirectory().'/azurarelay.env';
+        $temp_path = $this->environment->getTempDirectory() . '/azurarelay.env';
         file_put_contents($temp_path, implode("\n", $envFile));
 
         $io->note($envFile);

@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Response;
-use App\Http\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\ResponseInterface;
 
 return function (Slim\App $app) {
     $app->get(
         '/[{path:.*}]',
-        function (ServerRequest $request, Response $response, ?string $path = null): ResponseInterface {
+        function (
+            Slim\Http\ServerRequest $request,
+            Slim\Http\Response $response,
+            ?string $path = null
+        ): ResponseInterface {
             $baseUrl = getenv('AZURACAST_BASE_URL');
 
             if (!empty($baseUrl)) {

@@ -1,7 +1,17 @@
 #
 # Icecast build stage (for later copy)
 #
-FROM azuracast/icecast-kh-ac:latest AS icecast
+FROM azuracast/icecast-kh-ac@sha256:751ae244cc8a06487edff350eed330e1bc08fee6e9a4c7edd9881360f44c303f AS icecast
+
+#
+# Dockerize build stage
+#
+FROM golang:1.17-buster AS dockerize
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl git
+
+RUN go install github.com/jwilder/dockerize@latest
 
 #
 # Base image
@@ -14,6 +24,9 @@ ENV TZ="UTC"
 # Import Icecast-KH from build container
 COPY --from=icecast /usr/local/bin/icecast /usr/local/bin/icecast
 COPY --from=icecast /usr/local/share/icecast /usr/local/share/icecast
+
+# Add Dockerize
+COPY --from=dockerize /go/bin/dockerize /usr/local/bin
 
 # Run base build process
 COPY ./build/ /bd_build
@@ -60,8 +73,7 @@ EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
         8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
 
 # Nginx Proxy environment variables.
-ENV VIRTUAL_HOST="azurarelay.local" \
-    HTTPS_METHOD="noredirect" \
+ENV HTTPS_METHOD="noredirect" \
     APPLICATION_ENV="production"
 
 CMD ["/usr/local/bin/my_init"]

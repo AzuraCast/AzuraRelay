@@ -3,46 +3,56 @@ namespace App\Console\Command;
 
 use App\Console\Command\CommandAbstract;
 use App\Environment;
+use App\Xml\Writer;
 use AzuraCast\Api\Client;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use GuzzleHttp\Psr7\Uri;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Supervisor\Supervisor;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class UpdateCommand extends CommandAbstract
+#[AsCommand(
+    name: 'app:update',
+    description: 'Update local relay configuration based on remote setup.'
+)]
+class UpdateCommand extends Command
 {
-    protected LoggerInterface $logger;
-
-    public function __invoke(
-        SymfonyStyle $io,
-        LoggerInterface $logger,
-        Environment $environment,
-        Client $api,
-        Supervisor $supervisor
+    public function __construct(
+        protected LoggerInterface $logger,
+        protected Environment $environment,
+        protected Client $api,
+        protected Supervisor $supervisor
     ) {
-        $this->logger = $logger;
+        parent::__construct();
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
 
         $io->title('AzuraRelay Updater');
 
-        $baseUrl = $environment->getParentBaseUrl();
-        $apiKey = $environment->getParentApiKey();
+        $baseUrl = $this->environment->getParentBaseUrl();
+        $apiKey = $this->environment->getParentApiKey();
 
         if (empty($baseUrl) || empty($apiKey)) {
-            $io->error('Base URL or API key is not specified. Please supply these values in "azurarelay.env" to continue!.');
+            $io->error(
+                'Base URL or API key is not specified. Please supply these values in "azurarelay.env" to continue!.'
+            );
             return 1;
         }
 
-        $configDir = $environment->getParentDirectory().'/stations';
-        $supervisorPath = $configDir.'/supervisord.conf';
+        $configDir = $this->environment->getParentDirectory() . '/stations';
+        $supervisorPath = $configDir . '/supervisord.conf';
 
-        $relays = $api->admin()->relays()->list();
+        $relays = $this->api->admin()->relays()->list();
 
         // Write relay information to JSON file.
-        $relayInfoPath = $configDir.'/stations.json';
+        $relayInfoPath = $configDir . '/stations.json';
         file_put_contents($relayInfoPath, json_encode($relays));
 
         // Write supervisord config
@@ -76,7 +86,7 @@ class UpdateCommand extends CommandAbstract
 
         file_put_contents($supervisorPath, implode("\n", $supervisorConfig));
 
-        $this->reloadSupervisor($supervisor);
+        $this->reloadSupervisor();
 
         $io->success('Update successful. Relay is functioning!');
         return 0;
@@ -173,8 +183,7 @@ class UpdateCommand extends CommandAbstract
             }
         }
 
-        $writer = new \App\Xml\Writer;
-        $icecast_config_str = $writer->toString($config, 'icecast');
+        $icecast_config_str = (new Writer)->toString($config, 'icecast');
 
         // Strip the first line (the XML charset)
         $icecast_config_str = substr($icecast_config_str, strpos($icecast_config_str, "\n") + 1);
@@ -189,9 +198,9 @@ class UpdateCommand extends CommandAbstract
      *
      * @return array A list of affected service groups (either stopped, removed or changed).
      */
-    protected function reloadSupervisor(Supervisor $supervisor): array
+    protected function reloadSupervisor(): array
     {
-        $reload_result = $supervisor->reloadConfig();
+        $reload_result = $this->supervisor->reloadConfig();
 
         $affected_groups = [];
 
@@ -202,8 +211,8 @@ class UpdateCommand extends CommandAbstract
 
             foreach ($reload_removed as $group) {
                 $affected_groups[] = $group;
-                $supervisor->stopProcessGroup($group);
-                $supervisor->removeProcessGroup($group);
+                $this->supervisor->stopProcessGroup($group);
+                $this->supervisor->removeProcessGroup($group);
             }
         }
 
@@ -212,9 +221,9 @@ class UpdateCommand extends CommandAbstract
 
             foreach ($reload_changed as $group) {
                 $affected_groups[] = $group;
-                $supervisor->stopProcessGroup($group);
-                $supervisor->removeProcessGroup($group);
-                $supervisor->addProcessGroup($group);
+                $this->supervisor->stopProcessGroup($group);
+                $this->supervisor->removeProcessGroup($group);
+                $this->supervisor->addProcessGroup($group);
             }
         }
 
@@ -223,7 +232,7 @@ class UpdateCommand extends CommandAbstract
 
             foreach ($reload_added as $group) {
                 $affected_groups[] = $group;
-                $supervisor->addProcessGroup($group);
+                $this->supervisor->addProcessGroup($group);
             }
         }
 

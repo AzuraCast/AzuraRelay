@@ -1,12 +1,5 @@
 <?php
 return [
-    // URL Router helper
-    App\Http\Router::class => function (Slim\App $app, App\Environment $environment) {
-        $route_parser = $app->getRouteCollector()->getRouteParser();
-        return new App\Http\Router($environment, $route_parser);
-    },
-    App\Http\RouterInterface::class => DI\Get(App\Http\Router::class),
-
     // HTTP client
     GuzzleHttp\Client::class => function (Psr\Log\LoggerInterface $logger) {
         $stack = GuzzleHttp\HandlerStack::create();
@@ -40,14 +33,25 @@ return [
     },
 
     // Console
-    App\Console\Application::class => function (DI\Container $di, Psr\Log\LoggerInterface $logger) {
+    Symfony\Component\Console\Application::class => function (DI\Container $di, Psr\Log\LoggerInterface $logger) {
         $eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
         $eventDispatcher->addSubscriber(new App\Console\ErrorHandler($logger));
 
-        $console = new App\Console\Application('AzuraRelay Command Line Utility', '1.0.0', $di);
+        $console = new Symfony\Component\Console\Application(
+            'AzuraRelay Command Line Utility',
+            '1.0.0'
+        );
         $console->setDispatcher($eventDispatcher);
 
-        call_user_func(include(__DIR__ . '/cli.php'), $console);
+        $commandLoader = new Symfony\Component\Console\CommandLoader\ContainerCommandLoader(
+            $di,
+            [
+                'app:nowplaying' => App\Console\Command\NowPlayingCommand::class,
+                'app:setup' => App\Console\Command\SetupCommand::class,
+                'app:update' => App\Console\Command\UpdateCommand::class,
+            ]
+        );
+        $console->setCommandLoader($commandLoader);
 
         return $console;
     },
@@ -92,18 +96,18 @@ return [
         $supervisor = new Supervisor\Supervisor($client);
 
         if (!$supervisor->isConnected()) {
-            throw new \App\Exception(sprintf('Could not connect to supervisord.'));
+            throw new RuntimeException(sprintf('Could not connect to supervisord.'));
         }
 
         return $supervisor;
     },
 
     // NowPlaying Adapter factory
-    NowPlaying\Adapter\AdapterFactory::class => function (
+    NowPlaying\AdapterFactory::class => function (
         GuzzleHttp\Client $httpClient,
         Psr\Log\LoggerInterface $logger
     ) {
-        return new NowPlaying\Adapter\AdapterFactory(
+        return new NowPlaying\AdapterFactory(
             new Http\Factory\Guzzle\UriFactory,
             new Http\Factory\Guzzle\RequestFactory,
             $httpClient,

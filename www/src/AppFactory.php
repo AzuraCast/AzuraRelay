@@ -2,26 +2,21 @@
 
 namespace App;
 
-use App\Console\Application;
-use App\Http\Factory\ResponseFactory;
-use App\Http\Factory\ServerRequestFactory;
 use DI;
 use DI\Bridge\Slim\ControllerInvoker;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Http\Factory\Guzzle\ResponseFactory;
+use Http\Factory\Guzzle\StreamFactory;
 use Invoker\Invoker;
 use Invoker\ParameterResolver\AssociativeArrayResolver;
 use Invoker\ParameterResolver\Container\TypeHintContainerResolver;
 use Invoker\ParameterResolver\DefaultValueResolver;
 use Invoker\ParameterResolver\ResolverChain;
 use Monolog\Registry;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
-use Slim\Factory\ServerRequestCreatorFactory;
-use Slim\Interfaces\CallableResolverInterface;
-use Slim\Interfaces\MiddlewareDispatcherInterface;
-use Slim\Interfaces\RouteCollectorInterface;
-use Slim\Interfaces\RouteResolverInterface;
+use Slim\Http\Factory\DecoratedResponseFactory;
+use Symfony\Component\Console\Application;
 
 class AppFactory
 {
@@ -41,36 +36,9 @@ class AppFactory
 
     public static function buildAppFromContainer(DI\Container $container): App
     {
-        ServerRequestCreatorFactory::setSlimHttpDecoratorsAutomaticDetection(false);
-        ServerRequestCreatorFactory::setServerRequestCreator(new ServerRequestFactory());
-
-        $responseFactory = $container->has(ResponseFactoryInterface::class)
-            ? $container->get(ResponseFactoryInterface::class)
-            : new ResponseFactory();
-
-        $callableResolver = $container->has(CallableResolverInterface::class)
-            ? $container->get(CallableResolverInterface::class)
-            : null;
-
-        $routeCollector = $container->has(RouteCollectorInterface::class)
-            ? $container->get(RouteCollectorInterface::class)
-            : null;
-
-        $routeResolver = $container->has(RouteResolverInterface::class)
-            ? $container->get(RouteResolverInterface::class)
-            : null;
-
-        $middlewareDispatcher = $container->has(MiddlewareDispatcherInterface::class)
-            ? $container->get(MiddlewareDispatcherInterface::class)
-            : null;
-
         $app = new App(
-            $responseFactory,
-            $container,
-            $callableResolver,
-            $routeCollector,
-            $routeResolver,
-            $middlewareDispatcher
+            new DecoratedResponseFactory(new ResponseFactory(), new StreamFactory()),
+            $container
         );
         $container->set(App::class, $app);
 
@@ -92,9 +60,6 @@ class AppFactory
         $routeCollector->setDefaultInvocationStrategy($controllerInvoker);
 
         $environment = $container->get(Environment::class);
-        if ($environment->isProduction()) {
-            $routeCollector->setCacheFile($environment->getTempDirectory() . '/app_routes.cache.php');
-        }
 
         // Build routes
         if (file_exists($environment->getConfigDirectory() . '/routes.php')) {
@@ -128,9 +93,6 @@ class AppFactory
         $diDefinitions[Environment::class] = $environment;
 
         self::applyPhpSettings($environment);
-
-        // Helper constants for annotations.
-        define('SAMPLE_TIMESTAMP', random_int(time() - 86400, time() + 86400));
 
         $containerBuilder = new DI\ContainerBuilder();
         $containerBuilder->useAnnotations(true);
@@ -185,7 +147,7 @@ class AppFactory
     protected static function buildEnvironment(array $environment): Environment
     {
         if (!isset($environment[Environment::BASE_DIR])) {
-            throw new Exception\BootstrapException('No base directory specified!');
+            throw new \RuntimeException('No base directory specified!');
         }
 
         $environment[Environment::IS_DOCKER] = true;
@@ -201,7 +163,7 @@ class AppFactory
 
     protected static function applyPhpSettings(Environment $environment): void
     {
-        error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT);
+        error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED);
 
         $displayStartupErrors = (!$environment->isProduction() || $environment->isCli())
             ? '1'

@@ -1,5 +1,3 @@
-version: '2.2'
-
 services:
   relay:
     image: azuracast/azurarelay:latest

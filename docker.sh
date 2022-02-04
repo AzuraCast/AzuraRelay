@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2145,SC2178,SC2120,SC2162
 
-# Constants
-export COMPOSE_VERSION=1.29.2
-
 # Functions to manage .env files
 __dotenv=
 __dotenv_file=
@@ -250,6 +247,8 @@ check-install-requirements() {
 }
 
 install-docker() {
+  set -e
+
   curl -fsSL get.docker.com -o get-docker.sh
   sh get-docker.sh
   rm get-docker.sh
@@ -259,20 +258,40 @@ install-docker() {
 
     echo "You must log out or restart to apply necessary Docker permissions changes."
     echo "Restart, then continue installing using this script."
-    exit
+    exit 1
   fi
+
+  set +e
 }
 
 install-docker-compose() {
-  if [[ $EUID -ne 0 ]]; then
-    sudo sh -c "curl -fsSL https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose"
-    sudo chmod +x /usr/local/bin/docker-compose
-    sudo sh -c "curl -fsSL https://raw.githubusercontent.com/docker/compose/${COMPOSE_VERSION}/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose"
-  else
-    curl -fsSL https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-    curl -fsSL https://raw.githubusercontent.com/docker/compose/${COMPOSE_VERSION}/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
+  set -e
+  echo "Installing Docker Compose..."
+
+  curl -fsSL -o docker-compose https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-linux-$(uname -m)
+
+  ARCHITECTURE=amd64
+  if [ "$(uname -m)" = "aarch64" ]; then
+    ARCHITECTURE=arm64
   fi
+  curl -fsSL -o docker-compose-switch https://github.com/docker/compose-switch/releases/download/v1.0.2/docker-compose-linux-${ARCHITECTURE}
+
+  if [[ $EUID -ne 0 ]]; then
+    sudo chmod a+x ./docker-compose
+    sudo chmod a+x ./docker-compose-switch
+
+    sudo mv ./docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+    sudo mv ./docker-compose-switch /usr/local/bin/docker-compose
+  else
+    chmod a+x ./docker-compose
+    chmod a+x ./docker-compose-switch
+
+    mv ./docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+    mv ./docker-compose-switch /usr/local/bin/docker-compose
+  fi
+
+  echo "Docker Compose updated!"
+  set +e
 }
 
 #
@@ -290,18 +309,8 @@ install() {
     fi
   fi
 
-  if [[ $(command -v docker-compose) && $(docker-compose --version) ]]; then
-    # Check for update to Docker Compose
-    local CURRENT_COMPOSE_VERSION
-    CURRENT_COMPOSE_VERSION=$(docker-compose version --short)
-
-    if [ "$(version-number "$COMPOSE_VERSION")" -gt "$(version-number "$CURRENT_COMPOSE_VERSION")" ]; then
-      if ask "Your version of Docker Compose is out of date. Attempt to update it automatically?" Y; then
-        install-docker-compose
-      fi
-    else
-      echo "Docker Compose is already installed and up to date! Continuing..."
-    fi
+  if [[ $(command -v docker-compose) ]]; then
+    echo "Docker Compose is already installed. Continuing..."
   else
     if ask "Docker Compose does not appear to be installed. Install Docker Compose now?" Y; then
       install-docker-compose
@@ -371,6 +380,13 @@ update() {
 
     docker-compose pull
     docker-compose down
+  fi
+
+  local dc_config_test=$(docker-compose config)
+  if [ $? -ne 0 ]; then
+    if ask "Docker Compose needs to be updated to continue. Update to latest version?" Y; then
+      install-docker-compose
+    fi
   fi
 
   docker volume rm azurarelay_tmp_data
@@ -462,4 +478,8 @@ setup-letsencrypt() {
   envfile-set "LETSENCRYPT_EMAIL" "" "Optional e-mail address for expiration updates"
 }
 
-$*
+# Ensure we're in the same directory as this script.
+cd "${BASH_SOURCE%/*}/" || exit
+
+"$@"
+
