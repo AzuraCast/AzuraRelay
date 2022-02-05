@@ -21,9 +21,8 @@ jobs:
 
       - name: Cache PHP dependencies
         uses: actions/cache@v2
-        working-directory: ./www
         with:
-          path: vendor
+          path: www/vendor
           key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
 
       - name: Run Composer install
