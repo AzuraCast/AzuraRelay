@@ -104,7 +104,7 @@ class UpdateCommand extends Command
             'admin' => 'icemaster@localhost',
             'hostname' => 'localhost',
             'limits' => [
-                'clients' => 2500,
+                'clients' => 15000,
                 'sources' => count($relay->getMounts()),
                 'queue-size' => 524288,
                 'client-timeout' => 30,
