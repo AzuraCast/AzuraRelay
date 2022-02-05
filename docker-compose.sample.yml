@@ -1,6 +1,6 @@
 services:
   relay:
-    image: "azuracast/azurarelay:${AZURARELAY_VERSION:-latest}"
+    image: "ghcr.io/azuracast/relay:${AZURARELAY_VERSION:-latest}"
     env_file: azurarelay.env
     environment:
       NGINX_TIMEOUT : ${NGINX_TIMEOUT:-1800}
