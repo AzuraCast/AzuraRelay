@@ -23,7 +23,7 @@
     "psr/http-factory": "^1.0",
     "slim/http": "^1.2",
     "slim/slim": "^4",
-    "supervisorphp/supervisor": "^4.0",
+    "supervisorphp/supervisor": "dev-main",
     "symfony/console": "^6",
     "symfony/event-dispatcher": "^6"
   },

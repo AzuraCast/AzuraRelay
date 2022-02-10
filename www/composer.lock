@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1d1cadb1092237617cf8bdce1e05bd9",
+    "content-hash": "3596beb59775dd7552a1e1d6702717f6",
     "packages": [
         {
             "name": "azuracast/nowplaying",
@@ -2479,21 +2479,22 @@
         },
         {
             "name": "supervisorphp/supervisor",
-            "version": "v4.0.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/supervisorphp/supervisor.git",
-                "reference": "3deb0b1e0a79ac155172074f727a47b9ee68940b"
+                "reference": "a66e9b6bc9c85c4fefc090d41fd7e8582e99888b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/supervisorphp/supervisor/zipball/3deb0b1e0a79ac155172074f727a47b9ee68940b",
-                "reference": "3deb0b1e0a79ac155172074f727a47b9ee68940b",
+                "url": "https://api.github.com/repos/supervisorphp/supervisor/zipball/a66e9b6bc9c85c4fefc090d41fd7e8582e99888b",
+                "reference": "a66e9b6bc9c85c4fefc090d41fd7e8582e99888b",
                 "shasum": ""
             },
             "require": {
                 "lstrojny/fxmlrpc": ">=0.12",
-                "php": ">=7.3"
+                "php": ">=7.4",
+                "psr/log": "^1.1"
             },
             "require-dev": {
                 "behat/behat": "^3.0",
@@ -2505,12 +2506,15 @@
                 "php-http/guzzle6-adapter": "^2.0",
                 "php-http/httplug": "^2.1",
                 "php-http/message": "^1.8",
-                "phpspec/phpspec": "^6.2",
-                "phpstan/phpstan": "^0.12.32",
-                "phpstan/phpstan-strict-rules": "^0.12.2",
+                "php-parallel-lint/php-console-highlighter": "^0.5.0",
+                "php-parallel-lint/php-parallel-lint": "^1.3",
+                "phpspec/phpspec": "^7",
+                "phpstan/phpstan": "^1",
+                "phpstan/phpstan-strict-rules": "^1",
                 "roave/security-advisories": "dev-master",
-                "supervisorphp/configuration": "^0.2"
+                "supervisorphp/configuration": "^0.3"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2539,9 +2543,9 @@
             ],
             "support": {
                 "issues": "https://github.com/supervisorphp/supervisor/issues",
-                "source": "https://github.com/supervisorphp/supervisor/tree/v4.0.0"
+                "source": "https://github.com/supervisorphp/supervisor/tree/main"
             },
-            "time": "2020-07-02T01:08:38+00:00"
+            "time": "2021-12-13T01:34:40+00:00"
         },
         {
             "name": "symfony/console",
@@ -4173,6 +4177,7 @@
         "azuracast/nowplaying": 20,
         "azuracast/php-api-client": 20,
         "lstrojny/fxmlrpc": 20,
+        "supervisorphp/supervisor": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": true,
@@ -4184,5 +4189,5 @@
         "ext-xmlwriter": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }
