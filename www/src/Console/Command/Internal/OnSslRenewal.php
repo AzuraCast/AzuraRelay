@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Command\Internal;
 
 use AzuraCast\Api\Client;
+use Psr\Log\LoggerInterface;
 use Supervisor\Supervisor;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class OnSslRenewal extends Command
 {
     public function __construct(
+        protected LoggerInterface $logger,
         protected Client $api,
         protected Supervisor $supervisor
     ) {
