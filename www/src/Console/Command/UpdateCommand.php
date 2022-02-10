@@ -1,7 +1,7 @@
 <?php
 namespace App\Console\Command;
 
-use App\Console\Command\CommandAbstract;
+use App\CertificateLocator;
 use App\Environment;
 use App\Xml\Writer;
 use AzuraCast\Api\Client;
@@ -46,6 +46,15 @@ class UpdateCommand extends Command
             return 1;
         }
 
+        $relayBaseUrl = $this->environment->getRelayBaseUrl();
+
+        if (empty($relayBaseUrl)) {
+            $io->error(
+                'Relay Base URL is not specified. Please supply it in "azurarelay.env" to continue!.'
+            );
+            return 1;
+        }
+
         $configDir = $this->environment->getParentDirectory() . '/stations';
         $supervisorPath = $configDir . '/supervisord.conf';
 
@@ -62,7 +71,12 @@ class UpdateCommand extends Command
         foreach($relays as $relay) {
             $stations[] = $relay->getName();
 
-            $icecastXml = $this->writeStationConfiguration($relay, $configDir, $baseUrl);
+            $icecastXml = $this->writeStationConfiguration(
+                $relay,
+                $configDir,
+                $baseUrl,
+                $relayBaseUrl
+            );
 
             $groupName = 'station_'.$relay->getId();
             $programName = 'station_'.$relay->getId().'_relay';
@@ -95,14 +109,19 @@ class UpdateCommand extends Command
     protected function writeStationConfiguration(
         AdminRelayDto $relay,
         string $baseDir,
-        string $baseUrl
+        string $baseUrl,
+        string $relayBaseUrl
     ): string {
         $configPath = $baseDir.'/'.$relay->getShortcode().'.xml';
+
+        $relayUri = new Uri($relayBaseUrl);
+
+        $certPaths = CertificateLocator::findCertificate();
 
         $config = [
             'location' => 'AzuraCast',
             'admin' => 'icemaster@localhost',
-            'hostname' => 'localhost',
+            'hostname' => $relayUri->getHost(),
             'limits' => [
                 'clients' => 15000,
                 'sources' => count($relay->getMounts()),
@@ -135,6 +154,11 @@ class UpdateCommand extends Command
                     '@source' => '/',
                     '@dest' => '/status.xsl',
                 ],
+                'ssl-private-key' => $certPaths->getKeyPath(),
+                'ssl-certificate' => $certPaths->getCertPath(),
+                // phpcs:disable Generic.Files.LineLength
+                'ssl-allowed-ciphers' => 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS',
+                // phpcs:enable
                 'x-forwarded-for' => '127.0.0.1',
                 'all-x-forwarded-for' => '1',
             ],
