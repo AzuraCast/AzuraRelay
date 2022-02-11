@@ -49,6 +49,7 @@ return [
                 'app:nowplaying' => App\Console\Command\NowPlayingCommand::class,
                 'app:setup' => App\Console\Command\SetupCommand::class,
                 'app:update' => App\Console\Command\UpdateCommand::class,
+                'app:internal:on-ssl-renewal' => App\Console\Command\Internal\OnSslRenewal::class,
             ]
         );
         $console->setCommandLoader($commandLoader);
