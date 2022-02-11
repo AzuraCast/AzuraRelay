@@ -4,6 +4,9 @@ namespace App;
 
 class Environment
 {
+    /** @var static */
+    protected static $instance;
+
     protected array $data = [];
 
     // Environments
@@ -162,5 +165,28 @@ class Environment
         return str_starts_with(strtolower($value), 'y')
             || 'true' === strtolower($value)
             || '1' === $value;
+    }
+
+    /**
+     * @return static
+     */
+    public static function getInstance(): static
+    {
+        return self::$instance;
+    }
+
+    /**
+     */
+    public static function hasInstance(): bool
+    {
+        return isset(self::$instance);
+    }
+
+    /**
+     * @param static $instance
+     */
+    public static function setInstance($instance): void
+    {
+        self::$instance = $instance;
     }
 }

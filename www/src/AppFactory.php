@@ -90,6 +90,8 @@ class AppFactory
         }
 
         $environment = self::buildEnvironment($appEnvironment);
+        Environment::setInstance($environment);
+
         $diDefinitions[Environment::class] = $environment;
 
         self::applyPhpSettings($environment);

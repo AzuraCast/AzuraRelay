@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sv restart nginx
+
+cli app:internal:on-ssl-renewal
