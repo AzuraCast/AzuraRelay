@@ -1,5 +1,6 @@
 services:
   relay:
+    container_name: azurarelay_relay
     image: "ghcr.io/azuracast/relay:${AZURARELAY_VERSION:-latest}"
     env_file: azurarelay.env
     environment:
