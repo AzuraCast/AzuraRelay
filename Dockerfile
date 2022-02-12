@@ -1,7 +1,7 @@
 #
 # Icecast build stage (for later copy)
 #
-FROM azuracast/icecast-kh-ac@sha256:751ae244cc8a06487edff350eed330e1bc08fee6e9a4c7edd9881360f44c303f AS icecast
+FROM ghcr.io/azuracast/icecast-kh-ac:2.4.0-kh15-ac2
 
 #
 # Dockerize build stage
