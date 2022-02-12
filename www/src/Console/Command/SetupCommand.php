@@ -114,9 +114,26 @@ class SetupCommand extends Command
         // Relay Base URL
         //
 
+        $io->writeln('Provide the base URL of that installation (including "http://" or "https://") to continue.');
+
         $publicIp = @file_get_contents('http://ipecho.net/plain');
 
         $question = new Question\Question('Relay Base URL', getenv('AZURARELAY_BASE_URL') ?? $publicIp);
+        $question->setMaxAttempts(10);
+        $question->setValidator(function ($value) {
+            $relayBaseUri = new Uri($value);
+            if (!in_array($relayBaseUri->getScheme(), ['http', 'https'])) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'The entered URL "%s" must include "http://" or "https://"',
+                        $value,
+                    )
+                );
+            }
+
+            return $value;
+        });
+
         $relayBaseUrl = $io->askQuestion($question);
 
         //
