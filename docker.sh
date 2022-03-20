@@ -341,11 +341,15 @@ install() {
 
   docker-compose pull
   docker-compose up -d
-  docker-compose run --rm --user="azurarelay" relay cli app:setup
+  sleep 5s
+
+  docker-compose exec --user="azurarelay" relay cli app:setup
   docker cp azurarelay_relay:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
   docker-compose down -v
 
   docker-compose up -d
+  sleep 5s
+  
   docker-compose exec --user="azurarelay" relay cli app:update
   exit
 }
