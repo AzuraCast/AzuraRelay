@@ -53,6 +53,12 @@ server {
         internal;
     }
 
+    # LetsEncrypt handling
+    location /.well-known/acme-challenge/ {
+        root /usr/share/nginx/html;
+        try_files $uri =404;
+    }
+
     # Return 404 for all other php files not matching the front controller
     location ~ \.php$ {
         return 404;
