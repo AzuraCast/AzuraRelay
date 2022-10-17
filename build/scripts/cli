@@ -2,7 +2,7 @@
 
 if [ `whoami` != 'app' ]; then
     echo 'This script must be run as the "app" user. Rerunning...'
-    su-exec app cli $@
+    exec su-exec app cli $@
     exit 1
 fi
 

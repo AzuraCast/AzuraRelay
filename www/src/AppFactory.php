@@ -3,92 +3,22 @@
 namespace App;
 
 use DI;
-use DI\Bridge\Slim\ControllerInvoker;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Http\Factory\Guzzle\ResponseFactory;
-use Http\Factory\Guzzle\StreamFactory;
-use Invoker\Invoker;
-use Invoker\ParameterResolver\AssociativeArrayResolver;
-use Invoker\ParameterResolver\Container\TypeHintContainerResolver;
-use Invoker\ParameterResolver\DefaultValueResolver;
-use Invoker\ParameterResolver\ResolverChain;
 use Monolog\Registry;
 use Psr\Log\LoggerInterface;
-use Slim\App;
-use Slim\Http\Factory\DecoratedResponseFactory;
 use Symfony\Component\Console\Application;
 
 class AppFactory
 {
-    public static function createApp($autoloader = null, $appEnvironment = [], $diDefinitions = []): App
+    public static function createCli($appEnvironment = [], $diDefinitions = []): Application
     {
-        $di = self::buildContainer($autoloader, $appEnvironment, $diDefinitions);
-        return self::buildAppFromContainer($di);
-    }
-
-    public static function createCli($autoloader = null, $appEnvironment = [], $diDefinitions = []): Application
-    {
-        $di = self::buildContainer($autoloader, $appEnvironment, $diDefinitions);
-        self::buildAppFromContainer($di);
-
-        return $di->get(Application::class);
-    }
-
-    public static function buildAppFromContainer(DI\Container $container): App
-    {
-        $app = new App(
-            new DecoratedResponseFactory(new ResponseFactory(), new StreamFactory()),
-            $container
-        );
-        $container->set(App::class, $app);
-
-        $routeCollector = $app->getRouteCollector();
-
-        // Use the PHP-DI Bridge's action invocation helper.
-        $resolvers = [
-            // Inject parameters by name first
-            new AssociativeArrayResolver(),
-            // Then inject services by type-hints for those that weren't resolved
-            new TypeHintContainerResolver($container),
-            // Then fall back on parameters default values for optional route parameters
-            new DefaultValueResolver(),
-        ];
-
-        $invoker = new Invoker(new ResolverChain($resolvers), $container);
-        $controllerInvoker = new ControllerInvoker($invoker);
-
-        $routeCollector->setDefaultInvocationStrategy($controllerInvoker);
-
-        $environment = $container->get(Environment::class);
-
-        // Build routes
-        if (file_exists($environment->getConfigDirectory() . '/routes.php')) {
-            call_user_func(include($environment->getConfigDirectory() . '/routes.php'), $app);
-        }
-
-        $app->addBodyParsingMiddleware();
-        $app->addRoutingMiddleware();
-
-        $app->addErrorMiddleware(
-            !$environment->isProduction(),
-            true,
-            true,
-            $container->get(LoggerInterface::class)
-        );
-
-        return $app;
+        return self::buildContainer($appEnvironment, $diDefinitions)
+            ->get(Application::class);
     }
 
     public static function buildContainer(
-        $autoloader = null,
         $appEnvironment = [],
         $diDefinitions = []
     ): DI\Container {
-        // Register Annotation autoloader
-        if (null !== $autoloader) {
-            AnnotationRegistry::registerLoader([$autoloader, 'loadClass']);
-        }
-
         $environment = self::buildEnvironment($appEnvironment);
         Environment::setInstance($environment);
 
@@ -97,8 +27,8 @@ class AppFactory
         self::applyPhpSettings($environment);
 
         $containerBuilder = new DI\ContainerBuilder();
-        $containerBuilder->useAnnotations(true);
         $containerBuilder->useAutowiring(true);
+
         if ($environment->isProduction()) {
             $containerBuilder->enableCompilation($environment->getTempDirectory());
         }
@@ -152,11 +82,8 @@ class AppFactory
             throw new \RuntimeException('No base directory specified!');
         }
 
-        $environment[Environment::IS_DOCKER] = true;
-
         $environment[Environment::TEMP_DIR] ??= dirname($environment[Environment::BASE_DIR]) . '/www_tmp';
         $environment[Environment::CONFIG_DIR] ??= $environment[Environment::BASE_DIR] . '/config';
-        $environment[Environment::VIEWS_DIR] ??= $environment[Environment::BASE_DIR] . '/templates';
 
         $environment = array_merge(array_filter(getenv()), $environment);
 
@@ -176,9 +103,7 @@ class AppFactory
         ini_set('log_errors', '1');
         ini_set(
             'error_log',
-            $environment->isDocker()
-                ? '/dev/stderr'
-                : $environment->getTempDirectory() . '/php_errors.log'
+            '/dev/stderr'
         );
         ini_set('session.use_only_cookies', '1');
         ini_set('session.cookie_httponly', '1');

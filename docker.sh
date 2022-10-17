@@ -343,14 +343,14 @@ install() {
   docker-compose up -d
   sleep 5s
 
-  docker-compose exec --user="azurarelay" relay cli app:setup
-  docker cp azurarelay_relay:/var/azurarelay/www_tmp/azurarelay.env ./azurarelay.env
+  docker-compose exec --user="app" relay cli app:setup
+  docker cp azurarelay_relay:/var/app/www_tmp/azurarelay.env ./azurarelay.env
   docker-compose down -v
 
   docker-compose up -d
   sleep 5s
-  
-  docker-compose exec --user="azurarelay" relay cli app:update
+
+  docker-compose exec --user="app" relay cli app:update
   exit
 }
 
@@ -396,7 +396,7 @@ update() {
   docker volume rm azurarelay_tmp_data
 
   docker-compose up -d
-  docker-compose exec --user="azurarelay" relay cli app:update
+  docker-compose exec --user="app" relay cli app:update
 
   docker rmi $(docker images | grep "none" | awk '/ / { print $3 }') 2>/dev/null
 
@@ -421,7 +421,7 @@ update-self() {
 # Usage: ./docker.sh cli [command]
 #
 cli() {
-  docker-compose run --user="azurarelay" --rm relay cli $*
+  docker-compose run --user="app" --rm relay cli $*
   exit
 }
 
@@ -430,17 +430,7 @@ cli() {
 # Usage: ./docker.sh bash
 #
 bash() {
-  docker-compose exec --user="azurarelay" relay bash
-  exit
-}
-
-#
-# DEVELOPER TOOL:
-# Run the full test suite.
-#
-dev-tests() {
-  docker-compose exec --user="azurarelay" relay composer phplint -- $*
-  docker-compose exec --user="azurarelay" relay composer phpstan -- $*
+  docker-compose exec --user="app" relay bash
   exit
 }
 
