@@ -106,4 +106,9 @@ final class Supervisor
 
         return $affected_groups;
     }
+
+    public function restartAll(): void
+    {
+        $this->supervisor->restart();
+    }
 }

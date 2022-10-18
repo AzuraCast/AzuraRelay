@@ -4,7 +4,7 @@
 FROM alpine:3.16 AS icecast
 
 RUN apk add --no-cache curl git ca-certificates \
-    alpine-sdk libxml2 libxslt-dev libvorbis-dev libssl3 libcurl
+    alpine-sdk libxml2-dev libxslt-dev libvorbis-dev libressl-dev curl-dev
 
 WORKDIR /tmp/install_icecast
 
@@ -53,7 +53,7 @@ RUN mkdir -p /var/app/www \
     && chown -R app:app /var/app
 
 COPY ./build/php.ini /usr/local/etc/php/php.ini
-COPY ./build/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./build/supervisord.conf /etc/supervisord.conf
 COPY ./build/crontab /var/app/crontab
 COPY ./build/scripts /usr/local/bin
 
@@ -99,4 +99,4 @@ EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
         8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["--no-main-command"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

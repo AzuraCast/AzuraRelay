@@ -352,7 +352,7 @@ install() {
   docker-compose up -d
   sleep 5s
 
-  docker-compose exec --user="app" relay cli app:update
+  docker-compose exec --user="app" relay cli app:update --restart-all
   exit
 }
 
@@ -400,7 +400,7 @@ update() {
   docker-compose up -d
   sleep 5s
 
-  docker-compose exec --user="app" relay cli app:update
+  docker-compose exec --user="app" relay cli app:update --restart-all
 
   docker rmi $(docker images | grep "none" | awk '/ / { print $3 }') 2>/dev/null
 

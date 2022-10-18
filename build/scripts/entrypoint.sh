@@ -33,11 +33,4 @@ chmod -R u=rwX,go=rX /var/app/acme || true
 shopt -s dotglob
 rm -rf /var/app/www_tmp/*
 
-# Run Command
-if [ "$1" = '--no-main-command' ]; then
-    exec supervisord -c /etc/supervisor/supervisord.conf --nodaemon
-fi
-
-supervisord -c /etc/supervisor/supervisord.conf
-
 exec "$@"

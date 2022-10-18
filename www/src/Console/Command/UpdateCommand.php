@@ -11,6 +11,7 @@ use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -29,6 +30,16 @@ final class UpdateCommand extends Command
         private readonly Acme $acme
     ) {
         parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption(
+            'restart-all',
+            null,
+            InputOption::VALUE_NONE,
+            'Force a restart of all services.'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -70,6 +81,10 @@ final class UpdateCommand extends Command
         $this->nginx->writeForStations($relays);
         $this->icecast->writeForStations($relays);
         $this->supervisor->writeForStations($relays);
+
+        if ((bool)$input->getOption('restart-all')) {
+            $this->supervisor->restartAll();
+        }
 
         $io->success('Update successful. Relay is functioning!');
         return 0;
