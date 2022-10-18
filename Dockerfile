@@ -1,9 +1,4 @@
 #
-# Jobber
-#
-FROM jobber:latest AS jobber
-
-#
 # Icecast build step
 #
 FROM alpine:3.16 AS icecast
@@ -46,6 +41,7 @@ RUN mkdir -p /var/app/www \
 
 COPY ./build/php.ini /usr/local/etc/php/php.ini
 COPY ./build/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./build/crontab /etc/cron.d/app
 COPY ./build/startup_scripts /etc/my_init.d
 COPY ./build/scripts /usr/local/bin
 COPY ./build/nginx/proxy_params.conf /etc/nginx/proxy_params
@@ -53,17 +49,6 @@ COPY ./build/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./build/nginx/azurarelay.conf /etc/nginx/sites-enabled/default.conf
 
 RUN chmod a+x /usr/local/bin/*
-
-# Install Jobber
-COPY --from=jobber /usr/libexec/jobbermaster /usr/libexec/jobbermaster
-COPY --from=jobber /usr/libexec/jobberrunner /usr/libexec/jobberrunner
-COPY --from=jobber /usr/bin/jobber           /usr/bin/jobber
-COPY --from=jobber /etc/jobber.conf /etc/jobber.conf
-
-COPY --chown=app:app ./build/jobber.yml /var/app/.jobber
-
-RUN mkdir -p /var/jobber/1000 \
-    && chmod 644 /var/app/.jobber
 
 VOLUME ["/var/app/acme"]
 
