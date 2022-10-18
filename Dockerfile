@@ -41,7 +41,7 @@ RUN mkdir -p /var/app/www \
 
 COPY ./build/php.ini /usr/local/etc/php/php.ini
 COPY ./build/supervisord.conf /etc/supervisor/supervisord.conf
-COPY ./build/crontab /etc/cron.d/app
+COPY ./build/crontab /var/spool/cron/crontabs/app
 COPY ./build/startup_scripts /etc/my_init.d
 COPY ./build/scripts /usr/local/bin
 COPY ./build/nginx/proxy_params.conf /etc/nginx/proxy_params

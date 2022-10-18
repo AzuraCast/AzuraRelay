@@ -1,8 +1,7 @@
 SHELL=/bin/bash
 BASH_ENV=/container.env
-* * * * *   sleep 10; cd /var/app/www && php bin/console app:nowplaying > /proc/1/fd/1 2> /proc/1/fd/2
-* * * * *   sleep 25; cd /var/app/www && php bin/console app:nowplaying > /proc/1/fd/1 2> /proc/1/fd/2
-* * * * *   sleep 40; cd /var/app/www && php bin/console app:nowplaying > /proc/1/fd/1 2> /proc/1/fd/2
-* * * * *   sleep 55; cd /var/app/www && php bin/console app:nowplaying > /proc/1/fd/1 2> /proc/1/fd/2
-30 * * * *   cd /var/app/www && php bin/console app:update > /proc/1/fd/1 2> /proc/1/fd/2
-0 */6 * * *   /usr/local/bin/temp_cleanup
+* * * * *   sleep 10; cd /var/app/www && php bin/console app:nowplaying
+* * * * *   sleep 25; cd /var/app/www && php bin/console app:nowplaying
+* * * * *   sleep 40; cd /var/app/www && php bin/console app:nowplaying
+* * * * *   sleep 55; cd /var/app/www && php bin/console app:nowplaying
+*/15 * * * *   cd /var/app/www && php bin/console app:update
