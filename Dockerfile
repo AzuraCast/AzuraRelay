@@ -15,9 +15,19 @@ RUN curl -fsSL -o icecast.tar.gz https://github.com/AzuraCast/icecast-kh-ac/arch
     && make install
 
 #
+# Supercronic
+#
+
+FROM golang:1-alpine3.16 AS supercronic
+
+RUN go install github.com/aptible/supercronic@latest
+
+#
 # Main Image
 #
 FROM php:8.1-cli-alpine3.16
+
+ENV TZ=UTC
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
@@ -30,6 +40,9 @@ RUN apk add --no-cache zip git curl bash supervisor nginx su-exec \
 COPY --from=icecast /usr/local/bin/icecast /usr/local/bin/icecast
 COPY --from=icecast /usr/local/share/icecast /usr/local/share/icecast
 
+# Import supercronic
+COPY --from=supercronic /go/bin/supercronic /usr/local/bin/supercronic
+
 # Set up App user
 RUN mkdir -p /var/app/www \
     && addgroup -g 1000 app \
@@ -41,9 +54,9 @@ RUN mkdir -p /var/app/www \
 
 COPY ./build/php.ini /usr/local/etc/php/php.ini
 COPY ./build/supervisord.conf /etc/supervisor/supervisord.conf
-COPY ./build/crontab /var/spool/cron/crontabs/app
-COPY ./build/startup_scripts /etc/my_init.d
+COPY ./build/crontab /var/app/crontab
 COPY ./build/scripts /usr/local/bin
+
 COPY ./build/nginx/proxy_params.conf /etc/nginx/proxy_params
 COPY ./build/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./build/nginx/azurarelay.conf /etc/nginx/sites-enabled/default.conf
@@ -85,5 +98,5 @@ EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
         8300 8310 8320 8330 8340 8350 8360 8370 8380 8390 \
         8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
 
-ENTRYPOINT ["/usr/local/bin/my_init"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

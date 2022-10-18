@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Write environment variables to script
+declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /container.env
+chmod 744 /container.env
+
+# SSL Cert Management
 mkdir -p /var/app/acme/challenges || true
 
 if [ -f /var/app/acme/default.crt ]; then
@@ -7,7 +12,6 @@ if [ -f /var/app/acme/default.crt ]; then
     rm -rf /var/app/acme/default.crt || true
 fi
 
-# Generate a self-signed certificate if one doesn't exist in the certs path.
 if [ ! -f /var/app/acme/default.crt ]; then
     echo "Generating self-signed certificate..."
 
@@ -24,3 +28,10 @@ fi
 
 chown -R app:app /var/app/acme || true
 chmod -R u=rwX,go=rX /var/app/acme || true
+
+# Clear Temp
+shopt -s dotglob
+rm -rf /var/app/www_tmp/*
+
+# Run Command
+exec "$@"

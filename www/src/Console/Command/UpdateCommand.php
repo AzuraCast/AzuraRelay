@@ -35,8 +35,6 @@ final class UpdateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('AzuraRelay Updater');
-
         $baseUrl = $this->environment->getParentBaseUrl();
         $apiKey = $this->environment->getParentApiKey();
 

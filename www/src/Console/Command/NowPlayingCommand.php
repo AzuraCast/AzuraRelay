@@ -31,8 +31,6 @@ class NowPlayingCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('AzuraRelay Now Playing');
-
         $baseUrl = $this->environment->getParentBaseUrl();
         $apiKey = $this->environment->getParentApiKey();
 
