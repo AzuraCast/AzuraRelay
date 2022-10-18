@@ -21,7 +21,7 @@ FROM php:8.1-cli-alpine3.16
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions @composer gd curl xml zip bcmath mbstring intl
+RUN install-php-extensions @composer curl xml zip mbstring
 
 RUN apk add --no-cache zip git curl bash supervisor nginx su-exec \
     libxml2 libxslt libvorbis
