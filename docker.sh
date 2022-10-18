@@ -398,6 +398,8 @@ update() {
   docker volume rm azurarelay_tmp_data
 
   docker-compose up -d
+  sleep 5s
+
   docker-compose exec --user="app" relay cli app:update
 
   docker rmi $(docker images | grep "none" | awk '/ / { print $3 }') 2>/dev/null
