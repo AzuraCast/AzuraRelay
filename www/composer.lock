@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b33594bd453dc37d55969eb5e660973c",
+    "content-hash": "79784e33e771c66b61345b7e2125fde1",
     "packages": [
         {
             "name": "azuracast/nowplaying",
@@ -1395,6 +1395,50 @@
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
+            "name": "skoerfgen/acmecert",
+            "version": "3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/skoerfgen/ACMECert.git",
+                "reference": "5cf724cebf4bcab13ec609308d6a0cbd136ccdfd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/skoerfgen/ACMECert/zipball/5cf724cebf4bcab13ec609308d6a0cbd136ccdfd",
+                "reference": "5cf724cebf4bcab13ec609308d6a0cbd136ccdfd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">=5.6.0"
+            },
+            "suggest": {
+                "ext-curl": "Optional for better http performance"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "skoerfgen\\ACMECert\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stefan Körfgen",
+                    "homepage": "https://github.com/skoerfgen"
+                }
+            ],
+            "description": "PHP client library for Let's Encrypt and other ACME v2 - RFC 8555 compatible Certificate Authorities",
+            "support": {
+                "issues": "https://github.com/skoerfgen/ACMECert/issues",
+                "source": "https://github.com/skoerfgen/ACMECert"
+            },
+            "time": "2022-08-03T21:36:49+00:00"
+        },
+        {
             "name": "supervisorphp/supervisor",
             "version": "dev-main",
             "source": {
@@ -1785,6 +1829,69 @@
                 }
             ],
             "time": "2022-02-25T11:15:52+00:00"
+        },
+        {
+            "name": "symfony/filesystem",
+            "version": "v6.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/filesystem.git",
+                "reference": "4d216a2beef096edf040a070117c39ca2abce307"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/4d216a2beef096edf040a070117c39ca2abce307",
+                "reference": "4d216a2beef096edf040a070117c39ca2abce307",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-mbstring": "~1.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Filesystem\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides basic utilities for the filesystem",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/filesystem/tree/v6.1.5"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-09-21T20:29:40+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

@@ -1,65 +1,49 @@
 <?php
+
 /**
- * Extends the Zend Config XML library to allow attribute handling.
+ * Customized implementation of the Zend/Laminas Config XML Writer object.
  */
+
+declare(strict_types=1);
 
 namespace App\Xml;
 
-use Traversable;
+use RuntimeException;
 use XMLWriter;
-use Laminas\Config\Exception;
-use Laminas\Stdlib\ArrayUtils;
 
-class Writer extends \Laminas\Config\Writer\Xml
+final class Writer
 {
-    /**
-     * toString(): defined by Writer interface.
-     *
-     * @see    WriterInterface::toString()
-     * @param  mixed $config
-     * @param string $base_element
-     * @return string
-     */
-    public function toString($config, $base_element = 'zend-config')
-    {
-        if ($config instanceof Traversable) {
-            $config = ArrayUtils::iteratorToArray($config);
-        } elseif (!is_array($config)) {
-            throw new Exception\InvalidArgumentException(__METHOD__ . ' expects an array or Traversable config');
-        }
-
-        return $this->processConfig($config, $base_element);
+    public static function toString(
+        array $config,
+        string $baseElement = 'xml-config'
+    ): string {
+        return self::processConfig($config, $baseElement);
     }
 
-    /**
-     * processConfig(): defined by AbstractWriter.
-     *
-     * @param  array $config
-     * @param string $base_element
-     * @return string
-     */
-    public function processConfig(array $config, $base_element = 'zend-config')
-    {
+    private static function processConfig(
+        array $config,
+        string $baseElement = 'xml-config'
+    ): string {
         $writer = new XMLWriter();
         $writer->openMemory();
         $writer->setIndent(true);
         $writer->setIndentString(str_repeat(' ', 4));
 
         $writer->startDocument('1.0', 'UTF-8');
-        $writer->startElement($base_element);
+        $writer->startElement($baseElement);
 
         // Make sure attributes come first
-        uksort($config, [$this, '_attributesFirst']);
+        uksort($config, [self::class, 'attributesFirst']);
 
         foreach ($config as $sectionName => $data) {
             if (!is_array($data)) {
-                if (substr($sectionName, 0, 1) == '@') {
+                if (str_starts_with($sectionName, '@')) {
                     $writer->writeAttribute(substr($sectionName, 1), (string)$data);
                 } else {
                     $writer->writeElement($sectionName, (string)$data);
                 }
             } else {
-                $this->addBranch($sectionName, $data, $writer);
+                self::addBranch($sectionName, $data, $writer);
             }
         }
 
@@ -69,21 +53,15 @@ class Writer extends \Laminas\Config\Writer\Xml
         return $writer->outputMemory();
     }
 
-    /**
-     * Add a branch to an XML object recursively.
-     *
-     * @param  string $branchName
-     * @param  array $config
-     * @param  XMLWriter $writer
-     * @return void
-     * @throws Exception\RuntimeException
-     */
-    protected function addBranch($branchName, array $config, XMLWriter $writer)
-    {
+    private static function addBranch(
+        mixed $branchName,
+        array $config,
+        XMLWriter $writer
+    ): void {
         $branchType = null;
 
         // Ensure attributes come first.
-        uksort($config, [$this, '_attributesFirst']);
+        uksort($config, [self::class, 'attributesFirst']);
 
         foreach ($config as $key => $value) {
             if ($branchType === null) {
@@ -94,24 +72,23 @@ class Writer extends \Laminas\Config\Writer\Xml
                     $branchType = 'string';
                 }
             } elseif ($branchType !== (is_numeric($key) ? 'numeric' : 'string')) {
-                throw new Exception\RuntimeException('Mixing of string and numeric keys is not allowed');
+                throw new RuntimeException('Mixing of string and numeric keys is not allowed');
             }
 
             if ($branchType === 'numeric') {
                 if (is_array($value)) {
-                    $this->addBranch($branchName, $value, $writer);
+                    self::addBranch($branchName, $value, $writer);
                 } else {
                     $writer->writeElement($branchName, (string)$value);
                 }
             } else {
+                /** @var string $key */
                 if (is_array($value)) {
-                    $this->addBranch($key, $value, $writer);
+                    self::addBranch($key, $value, $writer);
+                } elseif (str_starts_with($key, '@')) {
+                    $writer->writeAttribute(substr($key, 1), (string)$value);
                 } else {
-                    if (substr($key, 0, 1) == '@') {
-                        $writer->writeAttribute(substr($key, 1), (string)$value);
-                    } else {
-                        $writer->writeElement($key, (string)$value);
-                    }
+                    $writer->writeElement($key, (string)$value);
                 }
             }
         }
@@ -121,13 +98,14 @@ class Writer extends \Laminas\Config\Writer\Xml
         }
     }
 
-    protected function _attributesFirst($a, $b) {
-        if (substr($a, 0, 1) == '@') {
+    private static function attributesFirst(mixed $a, mixed $b): int
+    {
+        if (str_starts_with((string)$a, '@')) {
             return -1;
-        } else if (substr($b, 0, 1) == '@') {
-            return 1;
-        } else {
-            return 0;
         }
+        if (str_starts_with((string)$b, '@')) {
+            return 1;
+        }
+        return 0;
     }
 }

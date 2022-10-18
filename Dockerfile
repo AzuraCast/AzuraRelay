@@ -23,7 +23,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 
 RUN install-php-extensions @composer gd curl xml zip bcmath mbstring intl
 
-RUN apk add --no-cache zip git curl bash supervisor caddy su-exec \
+RUN apk add --no-cache zip git curl bash supervisor nginx su-exec \
     libxml2 libxslt libvorbis
 
 # Import Icecast-KH from build container

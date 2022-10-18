@@ -101,11 +101,16 @@ class Environment
     }
 
     /**
-     * @return string The parent directory the application is within, i.e. `/var/azuracast`.
+     * @return string The parent directory the application is within, i.e. `/var/app`.
      */
     public function getParentDirectory(): string
     {
         return dirname($this->getBaseDirectory());
+    }
+
+    public function getStationsDirectory(): string
+    {
+        return $this->getParentDirectory() . '/stations';
     }
 
     public function getParentBaseUrl(): ?string
