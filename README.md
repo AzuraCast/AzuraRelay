@@ -34,7 +34,7 @@ cd /var/azurarelay
 Use these commands to download our Docker Utility Script, set it as executable and then run the Docker installation process:
 
 ```bash
-curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/master/docker.sh > docker.sh
+curl -L https://raw.githubusercontent.com/AzuraCast/AzuraRelay/main/docker.sh > docker.sh
 chmod a+x docker.sh
 ./docker.sh install
 ```

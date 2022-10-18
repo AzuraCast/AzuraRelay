@@ -10,7 +10,6 @@
     "ext-xmlwriter": "*",
     "azuracast/nowplaying": "dev-main",
     "azuracast/php-api-client": "dev-main",
-    "composer/ca-bundle": "^1.2",
     "guzzlehttp/guzzle": "^7",
     "lstrojny/fxmlrpc": "dev-master",
     "monolog/monolog": "^3",

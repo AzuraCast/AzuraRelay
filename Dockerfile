@@ -31,7 +31,7 @@ ENV TZ=UTC
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions @composer curl xml zip mbstring
+RUN install-php-extensions @composer gd curl xml zip mbstring
 
 RUN apk add --no-cache zip git curl bash supervisor nginx su-exec \
     libxml2 libxslt libvorbis
@@ -99,4 +99,4 @@ EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
         8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["--no-main-command"]
