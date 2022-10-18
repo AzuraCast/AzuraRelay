@@ -1,4 +1,5 @@
 <?php
+
 return [
     // HTTP client
     GuzzleHttp\Client::class => function (Psr\Log\LoggerInterface $logger) {
@@ -49,7 +50,7 @@ return [
                 'app:nowplaying' => App\Console\Command\NowPlayingCommand::class,
                 'app:setup' => App\Console\Command\SetupCommand::class,
                 'app:update' => App\Console\Command\UpdateCommand::class,
-                'app:internal:on-ssl-renewal' => App\Console\Command\Internal\OnSslRenewal::class,
+                'app:acme' => App\Console\Command\Acme\GetCertificateCommand::class,
             ]
         );
         $console->setCommandLoader($commandLoader);
@@ -61,7 +62,7 @@ return [
     Monolog\Logger::class => function (App\Environment $environment) {
         $logger = new Monolog\Logger($environment->getAppName());
 
-        $loggingLevel = $environment->isProduction() ? Psr\Log\LogLevel::NOTICE : Psr\Log\LogLevel::DEBUG;
+        $loggingLevel = $environment->isProduction() ? Monolog\Level::Notice : Monolog\Level::Debug;
 
         $log_stderr = new Monolog\Handler\StreamHandler('php://stderr', $loggingLevel, true);
         $logger->pushHandler($log_stderr);
@@ -87,10 +88,14 @@ return [
 
     Supervisor\Supervisor::class => function() {
         $client = new fXmlRpc\Client(
-            'http://127.0.0.1:9001/RPC2',
+            'http://localhost/RPC2',
             new fXmlRpc\Transport\PsrTransport(
-                new Http\Factory\Guzzle\RequestFactory,
-                new GuzzleHttp\Client
+                new GuzzleHttp\Psr7\HttpFactory,
+                new GuzzleHttp\Client([
+                                          'curl' => [
+                                              \CURLOPT_UNIX_SOCKET_PATH => '/tmp/supervisor.sock',
+                                          ],
+                                      ])
             )
         );
 
@@ -109,8 +114,8 @@ return [
         Psr\Log\LoggerInterface $logger
     ) {
         return new NowPlaying\AdapterFactory(
-            new Http\Factory\Guzzle\UriFactory,
-            new Http\Factory\Guzzle\RequestFactory,
+            new GuzzleHttp\Psr7\HttpFactory,
+            new GuzzleHttp\Psr7\HttpFactory,
             $httpClient,
             $logger
         );

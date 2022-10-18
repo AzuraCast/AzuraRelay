@@ -21,9 +21,7 @@ class Environment
     public const BASE_DIR = 'BASE_DIR';
     public const TEMP_DIR = 'TEMP_DIR';
     public const CONFIG_DIR = 'CONFIG_DIR';
-    public const VIEWS_DIR = 'VIEWS_DIR';
 
-    public const IS_DOCKER = 'IS_DOCKER';
     public const IS_CLI = 'IS_CLI';
 
     public const PARENT_BASE_URL = 'AZURACAST_BASE_URL';
@@ -38,7 +36,6 @@ class Environment
         self::APP_NAME => 'AzuraRelay',
         self::APP_ENV => self::ENV_PRODUCTION,
 
-        self::IS_DOCKER => true,
         self::IS_CLI => ('cli' === PHP_SAPI),
 
         self::RELAY_NAME => 'AzuraRelay',
@@ -67,11 +64,6 @@ class Environment
     public function isDevelopment(): bool
     {
         return self::ENV_DEVELOPMENT === $this->getAppEnvironment();
-    }
-
-    public function isDocker(): bool
-    {
-        return (bool)($this->data[self::IS_DOCKER] ?? true);
     }
 
     public function isCli(): bool
@@ -109,19 +101,16 @@ class Environment
     }
 
     /**
-     * @return string The directory where template/view files are stored.
-     */
-    public function getViewsDirectory(): string
-    {
-        return $this->data[self::VIEWS_DIR];
-    }
-
-    /**
-     * @return string The parent directory the application is within, i.e. `/var/azuracast`.
+     * @return string The parent directory the application is within, i.e. `/var/app`.
      */
     public function getParentDirectory(): string
     {
         return dirname($this->getBaseDirectory());
+    }
+
+    public function getStationsDirectory(): string
+    {
+        return $this->getParentDirectory() . '/stations';
     }
 
     public function getParentBaseUrl(): ?string

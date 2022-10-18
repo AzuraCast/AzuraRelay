@@ -1,53 +1,66 @@
 #
-# Icecast build stage (for later copy)
+# Icecast build step
 #
-FROM ghcr.io/azuracast/icecast-kh-ac:2.4.0-kh15-ac2 AS icecast
+FROM alpine:3.16 AS icecast
+
+RUN apk add --no-cache curl git ca-certificates \
+    alpine-sdk libxml2 libxslt-dev libvorbis-dev libssl3 libcurl
+
+WORKDIR /tmp/install_icecast
+
+RUN curl -fsSL -o icecast.tar.gz https://github.com/AzuraCast/icecast-kh-ac/archive/refs/tags/2.4.0-kh15-ac2.tar.gz \
+    && tar -xzvf icecast.tar.gz --strip-components=1 \
+    && ./configure \
+    && make \
+    && make install
 
 #
-# Dockerize build stage
+# Main Image
 #
-FROM golang:1.17-buster AS dockerize
+FROM php:8.1-cli-alpine3.16
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends openssl git
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN go install github.com/jwilder/dockerize@latest
+RUN install-php-extensions @composer gd curl xml zip bcmath mbstring intl
 
-#
-# Base image
-#
-FROM ubuntu:focal
-
-# Set time zone
-ENV TZ="UTC"
+RUN apk add --no-cache zip git curl bash supervisor nginx su-exec \
+    libxml2 libxslt libvorbis
 
 # Import Icecast-KH from build container
 COPY --from=icecast /usr/local/bin/icecast /usr/local/bin/icecast
 COPY --from=icecast /usr/local/share/icecast /usr/local/share/icecast
 
-# Add Dockerize
-COPY --from=dockerize /go/bin/dockerize /usr/local/bin
+# Set up App user
+RUN mkdir -p /var/app/www \
+    && addgroup -g 1000 app \
+    && adduser -u 1000 -G app -h /var/app/ -s /bin/sh -D app \
+    && addgroup app www-data \
+    && mkdir -p /var/app/www /var/app/stations /var/app/www_tmp /var/app/acme \
+       /etc/my_init.d /run/supervisord \
+    && chown -R app:app /var/app
 
-# Run base build process
-COPY ./build/ /bd_build
+COPY ./build/php.ini /usr/local/etc/php/php.ini
+COPY ./build/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./build/crontab /etc/cron.d/app
+COPY ./build/startup_scripts /etc/my_init.d
+COPY ./build/scripts /usr/local/bin
+COPY ./build/nginx/proxy_params.conf /etc/nginx/proxy_params
+COPY ./build/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./build/nginx/azurarelay.conf /etc/nginx/sites-enabled/default.conf
 
-RUN chmod a+x /bd_build/*.sh \
-    && /bd_build/prepare.sh \
-    && /bd_build/add_user.sh \
-    && /bd_build/setup.sh \
-    && /bd_build/cleanup.sh \
-    && rm -rf /bd_build
+RUN chmod a+x /usr/local/bin/*
+
+VOLUME ["/var/app/acme"]
 
 #
-# START Operations as `azurarelay` user
+# START Operations as `app` user
 #
-USER azurarelay
+USER app
 
 # Clone repo and set up repo
-WORKDIR /var/azurarelay/www
-VOLUME ["/var/azurarelay/stations", "/var/azurarelay/www_tmp", "/etc/letsencrypt"]
+WORKDIR /var/app/www
 
-COPY --chown=azurarelay:azurarelay ./www/composer.json ./www/composer.lock ./
+COPY --chown=app:app ./www/composer.json ./www/composer.lock ./
 RUN composer install  \
     --ignore-platform-reqs \
     --no-ansi \
@@ -56,12 +69,12 @@ RUN composer install  \
     --no-scripts
 
 # We need to copy our whole application so that we can generate the autoload file inside the vendor folder.
-COPY --chown=azurarelay:azurarelay ./www .
+COPY --chown=app:app ./www .
 
 RUN composer dump-autoload --optimize --classmap-authoritative
 
 #
-# END Operations as `azurarelay` user
+# END Operations as `app` user
 #
 
 USER root
@@ -72,8 +85,5 @@ EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
         8300 8310 8320 8330 8340 8350 8360 8370 8380 8390 \
         8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
 
-# Nginx Proxy environment variables.
-ENV HTTPS_METHOD="noredirect" \
-    APPLICATION_ENV="production"
-
-CMD ["/usr/local/bin/my_init"]
+ENTRYPOINT ["/usr/local/bin/my_init"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
