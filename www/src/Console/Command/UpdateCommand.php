@@ -5,8 +5,9 @@ use App\AzuraRelay\Icecast;
 use App\AzuraRelay\Nginx;
 use App\AzuraRelay\Supervisor;
 use App\Environment;
+use App\Service\Acme;
 use AzuraCast\Api\Client;
-use Psr\Log\LoggerInterface;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,12 +21,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class UpdateCommand extends Command
 {
     public function __construct(
-        private LoggerInterface $logger,
-        private Environment $environment,
-        private Client $api,
-        private Supervisor $supervisor,
-        private Icecast $icecast,
-        private Nginx $nginx,
+        private readonly Environment $environment,
+        private readonly Client $api,
+        private readonly Supervisor $supervisor,
+        private readonly Icecast $icecast,
+        private readonly Nginx $nginx,
+        private readonly Acme $acme
     ) {
         parent::__construct();
     }
@@ -58,10 +59,16 @@ final class UpdateCommand extends Command
         $relays = $this->api->admin()->relays()->list();
 
         // Write relay information to JSON file.
-        $relayInfoPath = $this->environment->getConfigDirectory() . '/stations.json';
+        $relayInfoPath = $this->environment->getStationsDirectory() . '/stations.json';
         file_put_contents($relayInfoPath, json_encode($relays, JSON_THROW_ON_ERROR));
 
         // Write and reload configs
+        try {
+            $this->acme->getCertificate();
+        } catch (Exception $e) {
+            $io->error($e->getMessage());
+        }
+
         $this->nginx->writeForStations($relays);
         $this->icecast->writeForStations($relays);
         $this->supervisor->writeForStations($relays);

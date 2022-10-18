@@ -5,12 +5,13 @@ namespace App\AzuraRelay;
 use App\Environment;
 use AzuraCast\Api\Dto\AdminRelayDto;
 use Psr\Log\LoggerInterface;
+use Supervisor\Supervisor as SupervisorClient;
 use Symfony\Component\Filesystem\Filesystem;
 
 final class Supervisor
 {
     public function __construct(
-        private \Supervisor\Supervisor $supervisor,
+        private SupervisorClient $supervisor,
         private LoggerInterface $logger,
         private Environment $environment
     ) {
@@ -44,18 +45,19 @@ final class Supervisor
         $configDir = dirname($icecastXml);
 
         return <<<INI
-            [group:{$groupName}]
-            programs={$programName}
+        [group:{$groupName}]
+        programs={$programName}
 
-            [program:{$programName}]
-            user=app
-            command=/usr/local/bin/icecast -c {$icecastXml}
-            directory={$configDir}
-            stdout_logfile=/dev/stdout
-            stdout_logfile_maxbytes=0
-            stderr_logfile=/dev/stderr
-            stderr_logfile_maxbytes=0
-            autorestart=true
+        [program:{$programName}]
+        user=app
+        command=/usr/local/bin/icecast -c {$icecastXml}
+        directory={$configDir}
+        stdout_logfile=/dev/stdout
+        stdout_logfile_maxbytes=0
+        stderr_logfile=/dev/stderr
+        stderr_logfile_maxbytes=0
+        autorestart=true
+
         INI;
     }
 
