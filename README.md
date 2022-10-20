@@ -1,4 +1,6 @@
-# AzuraRelay
+![](https://github.com/AzuraCast/AzuraRelay/raw/main/azurarelay.png)![](https://static.scarf.sh/a.png?x-pxid=7ff80422-80b2-4155-83f1-0d45a3b792b7)
+
+# AzuraRelay: AzuraCast's Lightweight, Automated Relay Companion
 
 A "relay in a box" containing a lightweight web application and Icecast servers that can connect to and relay an AzuraRelay parent instance.
 
