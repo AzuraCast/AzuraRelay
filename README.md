@@ -1,12 +1,20 @@
 # AzuraRelay
+
 A "relay in a box" containing a lightweight web application and Icecast servers that can connect to and relay an AzuraRelay parent instance.
+
+## What it Does
+
+After you finish the initial setup, AzuraRelay will:
+ - Connect to a parent AzuraCast instance and list all relayable streams,
+ - Automatically relay those streams via Icecast using the same ports and URLs as the parent installation, and
+ - Report itself back to AzuraCast so listeners can select it as a stream and you can view listener data from it.
 
 ## Parent Installation Requirements
 
 Before installing AzuraRelay, make sure your "parent" AzuraCast installation:
 
-- is updated to the latest version,
-- has the direct radio ports (i.e. 8000, 8010) exposed (i.e. isn't behind a CloudFlare proxy)
+- Is updated to the latest version, and
+- Has the direct radio ports (i.e. 8000, 8010) exposed; if you use a service like Cloudflare to protect your server, enter the server's direct IP address when prompted for the parent URL in the AzuraRelay setup.
 
 ## Installing
 
@@ -14,11 +22,11 @@ AzuraRelay is powered by Docker and uses pre-built images that contain every com
 
 ### System Requirements
 
-- A 64-bit x86 (x86_64) CPU (ARM devices, like the Raspberry Pi 3/4, are not supported.)
+- A 64-bit x86 (x86_64) CPU or ARM64 CPU (like the Raspberry Pi 3/4)
 - 512MB or greater of RAM
-- 20GB or greater of hard drive space
+- 10GB or greater of hard drive space
 
-For Linux hosts, the `sudo`, `curl` and `git` packages should be installed before installing . Most Linux distributions include these packages already.
+For Linux hosts, the `sudo`, `curl` and `git` packages should be installed before installing. Most Linux distributions include these packages already.
 
 ### Installing
 
