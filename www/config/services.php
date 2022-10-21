@@ -2,7 +2,7 @@
 
 return [
     // HTTP client
-    GuzzleHttp\Client::class => function (Psr\Log\LoggerInterface $logger) {
+    GuzzleHttp\HandlerStack::class => function (Psr\Log\LoggerInterface $logger) {
         $stack = GuzzleHttp\HandlerStack::create();
 
         $stack->push(
@@ -13,12 +13,16 @@ return [
             )
         );
 
+        return $stack;
+    },
+
+    GuzzleHttp\Client::class => function (GuzzleHttp\HandlerStack $handlers) {
         return new GuzzleHttp\Client(
             [
-                'handler' => $stack,
+                'handler' => $handlers,
                 GuzzleHttp\RequestOptions::VERIFY => false,
                 GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
-                GuzzleHttp\RequestOptions::TIMEOUT => 3.0,
+                GuzzleHttp\RequestOptions::TIMEOUT => 5.0,
             ]
         );
     },
@@ -68,11 +72,18 @@ return [
     },
     Psr\Log\LoggerInterface::class => DI\get(Monolog\Logger::class),
 
-    AzuraCast\Api\Client::class => function(GuzzleHttp\Client $httpClient) {
+    AzuraCast\Api\Client::class => function (GuzzleHttp\HandlerStack $handlers) {
         return AzuraCast\Api\Client::create(
             getenv('AZURACAST_BASE_URL'),
             getenv('AZURACAST_API_KEY'),
-            $httpClient
+            new GuzzleHttp\Client(
+                [
+                    'handler' => $handlers,
+                    GuzzleHttp\RequestOptions::VERIFY => false,
+                    GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
+                    GuzzleHttp\RequestOptions::TIMEOUT => 15.0,
+                ]
+            )
         );
     },
 
@@ -100,13 +111,13 @@ return [
 
     // NowPlaying Adapter factory
     NowPlaying\AdapterFactory::class => function (
-        GuzzleHttp\Client $httpClient,
+        GuzzleHttp\Client $client,
         Psr\Log\LoggerInterface $logger
     ) {
         return new NowPlaying\AdapterFactory(
             new GuzzleHttp\Psr7\HttpFactory,
             new GuzzleHttp\Psr7\HttpFactory,
-            $httpClient,
+            $client,
             $logger
         );
     },
