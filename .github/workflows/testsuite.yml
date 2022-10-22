@@ -16,7 +16,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-          extensions: intl, maxminddb
           tools: composer:v2, cs2pr
 
       - name: Cache PHP dependencies
@@ -30,15 +29,20 @@ jobs:
         run: |
           composer install --no-interaction --ignore-platform-reqs
 
-      - name: Run PHP Linter
-        working-directory: ./www
-        run: |
+      - name : Run PHP Linter
+        working-directory : ./www
+        run : |
           vendor/bin/parallel-lint . --exclude vendor --checkstyle | cs2pr
 
-      - name: Run PHPStan
-        working-directory: ./www
-        run: |
+      - name : Run PHPStan
+        working-directory : ./www
+        run : |
           vendor/bin/phpstan analyze --error-format=checkstyle | cs2pr
+
+      - name : Run PHP Code Sniffer
+        working-directory : ./www
+        run : |
+          vendor/bin/phpcs --report=checkstyle | cs2pr
 
   publish:
     name: Publish

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="AzuraCast">
+    <description>The AzuraCast PHP coding standard.</description>
+
+    <file>src</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+
+    <!-- relative path from PHPCS source location -->
+    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+
+    <rule ref="PSR12"/>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification"/>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
+</ruleset>
