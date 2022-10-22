@@ -73,11 +73,11 @@ return [
     AzuraCast\Api\Client::class => fn(App\Service\GuzzleFactory $guzzleFactory) => AzuraCast\Api\Client::create(
         getenv('AZURACAST_BASE_URL'),
         getenv('AZURACAST_API_KEY'),
-        $guzzleFactory->buildClient(
+        $guzzleFactory->withAddedConfig(
             [
                 GuzzleHttp\RequestOptions::TIMEOUT => 15.0,
             ]
-        )
+        )->getDefaultConfig()
     ),
 
     Supervisor\Supervisor::class => function () {
