@@ -2,9 +2,10 @@
 namespace App\Console\Command;
 
 use App\Environment;
+use App\Service\GuzzleFactory;
 use AzuraCast\Api\Client;
-use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\RequestOptions;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,12 +19,20 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class SetupCommand extends Command
 {
+    protected GuzzleFactory $guzzleFactory;
+
     public function __construct(
-        protected GuzzleClient $httpClient,
+        GuzzleFactory $guzzleFactory,
         protected Client $api,
         protected Environment $environment
     ) {
         parent::__construct();
+
+        $this->guzzleFactory = $guzzleFactory->withAddedConfig(
+            [
+                RequestOptions::TIMEOUT => 15.0,
+            ]
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -44,7 +53,11 @@ class SetupCommand extends Command
         $question->setMaxAttempts(10);
         $question->setValidator(function ($value) {
             try {
-                $api = Client::create($value, null, $this->httpClient);
+                $api = Client::create(
+                    $value,
+                    null,
+                    $this->guzzleFactory->getDefaultConfig()
+                );
                 $np = $api->nowPlaying();
             } catch (\Exception $e) {
                 throw new \RuntimeException(
@@ -79,7 +92,11 @@ class SetupCommand extends Command
         $question = new Question\Question('AzuraCast API Key', getenv('AZURACAST_API_KEY'));
         $question->setMaxAttempts(10);
         $question->setValidator(function ($value) use ($baseUrl) {
-            $api = Client::create($baseUrl, $value, $this->httpClient);
+            $api = Client::create(
+                $baseUrl,
+                $value,
+                $this->guzzleFactory->getDefaultConfig()
+            );
             $relays = $api->admin()->relays()->list();
 
             if (0 === count($relays)) {

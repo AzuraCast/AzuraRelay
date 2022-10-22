@@ -2,7 +2,7 @@
 
 return [
     // HTTP client
-    GuzzleHttp\HandlerStack::class => function (Psr\Log\LoggerInterface $logger) {
+    App\Service\GuzzleFactory::class => function (Psr\Log\LoggerInterface $logger) {
         $stack = GuzzleHttp\HandlerStack::create();
 
         $stack->push(
@@ -13,19 +13,17 @@ return [
             )
         );
 
-        return $stack;
-    },
-
-    GuzzleHttp\Client::class => function (GuzzleHttp\HandlerStack $handlers) {
-        return new GuzzleHttp\Client(
+        return new App\Service\GuzzleFactory(
             [
-                'handler' => $handlers,
+                'handler' => $stack,
                 GuzzleHttp\RequestOptions::VERIFY => false,
                 GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
                 GuzzleHttp\RequestOptions::TIMEOUT => 5.0,
             ]
         );
     },
+
+    GuzzleHttp\Client::class => fn(App\Service\GuzzleFactory $guzzleFactory) => $guzzleFactory->buildClient(),
 
     // Console
     Symfony\Component\Console\Application::class => function (DI\Container $di, Psr\Log\LoggerInterface $logger) {
@@ -72,22 +70,17 @@ return [
     },
     Psr\Log\LoggerInterface::class => DI\get(Monolog\Logger::class),
 
-    AzuraCast\Api\Client::class => function (GuzzleHttp\HandlerStack $handlers) {
-        return AzuraCast\Api\Client::create(
-            getenv('AZURACAST_BASE_URL'),
-            getenv('AZURACAST_API_KEY'),
-            new GuzzleHttp\Client(
-                [
-                    'handler' => $handlers,
-                    GuzzleHttp\RequestOptions::VERIFY => false,
-                    GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
-                    GuzzleHttp\RequestOptions::TIMEOUT => 15.0,
-                ]
-            )
-        );
-    },
+    AzuraCast\Api\Client::class => fn(App\Service\GuzzleFactory $guzzleFactory) => AzuraCast\Api\Client::create(
+        getenv('AZURACAST_BASE_URL'),
+        getenv('AZURACAST_API_KEY'),
+        $guzzleFactory->buildClient(
+            [
+                GuzzleHttp\RequestOptions::TIMEOUT => 15.0,
+            ]
+        )
+    ),
 
-    Supervisor\Supervisor::class => function() {
+    Supervisor\Supervisor::class => function () {
         $client = new fXmlRpc\Client(
             'http://localhost/RPC2',
             new fXmlRpc\Transport\PsrTransport(

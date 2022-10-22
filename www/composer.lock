@@ -83,18 +83,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AzuraCast/php-api-client.git",
-                "reference": "feffdf447aa4069f4c26c8750d92d45f72682206"
+                "reference": "59ab17f12e54ed213a5cc70f0b53b6dab9df087f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AzuraCast/php-api-client/zipball/feffdf447aa4069f4c26c8750d92d45f72682206",
-                "reference": "feffdf447aa4069f4c26c8750d92d45f72682206",
+                "url": "https://api.github.com/repos/AzuraCast/php-api-client/zipball/59ab17f12e54ed213a5cc70f0b53b6dab9df087f",
+                "reference": "59ab17f12e54ed213a5cc70f0b53b6dab9df087f",
                 "shasum": ""
             },
             "require": {
                 "ext-gd": "*",
                 "ext-json": "*",
-                "guzzlehttp/guzzle": "^7.0",
+                "guzzlehttp/guzzle": ">=7.0",
                 "php": ">=7.2.0"
             },
             "require-dev": {
@@ -152,7 +152,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2022-10-21T14:02:22+00:00"
+            "time": "2022-10-22T02:25:39+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
