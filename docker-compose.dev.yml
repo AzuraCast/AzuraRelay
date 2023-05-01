@@ -5,4 +5,4 @@ services:
     environment:
       APPLICATION_ENV: development
     volumes:
-      - ./www:/var/azurarelay/www
+      - $PWD/www:/var/app/www
