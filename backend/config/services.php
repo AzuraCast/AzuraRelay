@@ -52,7 +52,7 @@ return [
 
     // Monolog Logger
     Monolog\Logger::class => function (App\Environment $environment) {
-        $logger = new Monolog\Logger($environment->getAppName());
+        $logger = new Monolog\Logger('AzuraRelay');
 
         $loggingLevel = $environment->isProduction() ? Monolog\Level::Notice : Monolog\Level::Debug;
 
@@ -84,12 +84,12 @@ return [
         $client = new fXmlRpc\Client(
             'http://localhost/RPC2',
             new fXmlRpc\Transport\PsrTransport(
-                new GuzzleHttp\Psr7\HttpFactory,
+                new GuzzleHttp\Psr7\HttpFactory(),
                 new GuzzleHttp\Client([
-                                          'curl' => [
-                                              \CURLOPT_UNIX_SOCKET_PATH => '/tmp/supervisor.sock',
-                                          ],
-                                      ])
+                    'curl' => [
+                        \CURLOPT_UNIX_SOCKET_PATH => '/tmp/supervisor.sock',
+                    ],
+                ])
             )
         );
 
@@ -108,8 +108,8 @@ return [
         Psr\Log\LoggerInterface $logger
     ) {
         return new NowPlaying\AdapterFactory(
-            new GuzzleHttp\Psr7\HttpFactory,
-            new GuzzleHttp\Psr7\HttpFactory,
+            new GuzzleHttp\Psr7\HttpFactory(),
+            new GuzzleHttp\Psr7\HttpFactory(),
             $client,
             $logger
         );

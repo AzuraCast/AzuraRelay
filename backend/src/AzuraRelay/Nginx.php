@@ -9,10 +9,9 @@ use Symfony\Component\Filesystem\Filesystem;
 
 final class Nginx
 {
-    private const PROCESS_NAME = 'nginx';
+    private const string PROCESS_NAME = 'nginx';
 
     public function __construct(
-        private Environment $environment,
         private SupervisorClient $supervisor
     ) {
     }
@@ -28,7 +27,7 @@ final class Nginx
             $config[] = $this->getConfigForStation($station);
         }
 
-        $configPath = $this->environment->getStationsDirectory() . '/nginx.conf';
+        $configPath = Environment::getStationsDirectory() . '/nginx.conf';
         (new Filesystem())->dumpFile($configPath, implode("\n", $config));
 
         $this->reload();

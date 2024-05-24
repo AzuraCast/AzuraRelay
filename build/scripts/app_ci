@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ `whoami` != 'app' ]; then
+    exec su-exec app app_ci "$@"
+fi
+
+cd /var/app/www
+exec composer run ci "$@"

@@ -22,8 +22,7 @@ class NowPlayingCommand extends Command
 {
     public function __construct(
         protected Client $api,
-        protected AdapterFactory $adapterFactory,
-        protected Environment $environment
+        protected AdapterFactory $adapterFactory
     ) {
         parent::__construct();
     }
@@ -32,8 +31,8 @@ class NowPlayingCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $baseUrl = $this->environment->getParentBaseUrl();
-        $apiKey = $this->environment->getParentApiKey();
+        $baseUrl = Environment::getParentBaseUrl();
+        $apiKey = Environment::getParentApiKey();
 
         if (empty($baseUrl) || empty($apiKey)) {
             $io->error(
@@ -42,7 +41,7 @@ class NowPlayingCommand extends Command
             return 1;
         }
 
-        $configDir = $this->environment->getParentDirectory() . '/stations';
+        $configDir = Environment::getParentDirectory() . '/stations';
         $relayInfoPath = $configDir . '/stations.json';
 
         if (!is_file($relayInfoPath)) {
@@ -60,7 +59,7 @@ class NowPlayingCommand extends Command
                 ->withPort($relay->getPort())
                 ->withUserInfo('admin:' . $relay->getAdminPassword());
 
-            $npAdapter = $this->adapterFactory->getAdapter(AdapterFactory::ADAPTER_ICECAST, $localUri);
+            $npAdapter = $this->adapterFactory->getIcecastAdapter($localUri);
 
             foreach ($relay->getMounts() as $mount) {
                 $np_mount = $npAdapter->getNowPlaying($mount->getPath(), true);
@@ -71,9 +70,9 @@ class NowPlayingCommand extends Command
         if (!empty($np)) {
             $this->api->admin()->relays()->update(
                 new AdminRelayUpdateDto(
-                    $this->environment->getRelayBaseUrl(),
-                    $this->environment->getRelayName(),
-                    $this->environment->relayIsPublic(),
+                    Environment::getRelayBaseUrl(),
+                    Environment::getRelayName(),
+                    Environment::relayIsPublic(),
                     $np
                 )
             );

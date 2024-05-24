@@ -12,8 +12,7 @@ final class Supervisor
 {
     public function __construct(
         private SupervisorClient $supervisor,
-        private LoggerInterface $logger,
-        private Environment $environment
+        private LoggerInterface $logger
     ) {
     }
 
@@ -23,7 +22,7 @@ final class Supervisor
     public function writeForStations(
         array $stations
     ): void {
-        $supervisorPath = $this->environment->getStationsDirectory() . '/supervisord.conf';
+        $supervisorPath = Environment::getStationsDirectory() . '/supervisord.conf';
         $config = [];
 
         foreach ($stations as $relay) {
@@ -41,7 +40,7 @@ final class Supervisor
         $groupName = 'station_' . $relay->getId();
         $programName = 'station_' . $relay->getId() . '_relay';
 
-        $icecastXml = Icecast::getConfigPathForStation($this->environment, $relay);
+        $icecastXml = Icecast::getConfigPathForStation($relay);
         $configDir = dirname($icecastXml);
 
         return <<<INI

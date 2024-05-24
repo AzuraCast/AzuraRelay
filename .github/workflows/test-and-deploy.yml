@@ -1,0 +1,78 @@
+name: Test and Deploy
+
+on: [ push, pull_request, workflow_dispatch ]
+
+jobs:
+  build:
+    name: Build and Test
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set up Depot
+        uses: depot/setup-action@v1
+
+      - name: Build Test Image
+        uses: depot/build-push-action@v1
+        with:
+          context: .
+          target: testing
+          load: true
+          tags: azurarelay:testing
+
+      - name: Run CI Test Suite
+        run: |
+          docker run --rm azurarelay:testing app_ci
+
+  publish:
+    name: Publish
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set up Depot
+        uses: depot/setup-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            azuracast/azurarelay
+            ghcr.io/azuracast/relay
+          tags: |
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      - name: Publish to Docker Hub
+        uses: depot/build-push-action@v1
+        with:
+          context: .
+          target: production
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

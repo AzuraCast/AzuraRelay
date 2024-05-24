@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ `whoami` != 'app' ]; then
+    exec su-exec app app_cli "$@"
+fi
+
+cd /var/app/www
+exec php backend/bin/console "$@"

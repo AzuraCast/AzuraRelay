@@ -9,11 +9,11 @@ tmp/cache/*---*
 .phplint-cache
 
 # Local development files.
-/www/config/routes.dev.php
+/backend/config/routes.dev.php
 /azurarelay.env
 
 # Composer-generated content
-/www/vendor/
+/vendor/
 
 # Docker files
 /docker-compose.yml

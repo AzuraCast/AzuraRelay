@@ -345,14 +345,14 @@ install() {
   docker-compose up -d
   sleep 5s
 
-  docker-compose exec --user="app" relay cli app:setup
+  docker-compose exec --user="app" relay app_cli app:setup
   docker cp azurarelay_relay:/var/app/www_tmp/azurarelay.env ./azurarelay.env
   docker-compose down -v
 
   docker-compose up -d
   sleep 5s
 
-  docker-compose exec --user="app" relay cli app:update --restart-all
+  docker-compose exec --user="app" relay app_cli app:update --restart-all
   exit
 }
 
@@ -400,7 +400,7 @@ update() {
   docker-compose up -d
   sleep 5s
 
-  docker-compose exec --user="app" relay cli app:update --restart-all
+  docker-compose exec --user="app" relay app_cli app:update --restart-all
 
   docker rmi $(docker images | grep "none" | awk '/ / { print $3 }') 2>/dev/null
 
@@ -425,7 +425,7 @@ update-self() {
 # Usage: ./docker.sh cli [command]
 #
 cli() {
-  docker-compose run --user="app" --rm relay cli $*
+  docker-compose run --user="app" --rm relay app_cli $*
   exit
 }
 

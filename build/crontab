@@ -1,2 +1,2 @@
-*/15 * * * * * * php /var/app/www/bin/console app:nowplaying
-0 */15 * * * * * php /var/app/www/bin/console app:update
+*/15 * * * * * * app_cli app:nowplaying
+0 */15 * * * * * app_cli app:update

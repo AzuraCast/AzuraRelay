@@ -11,11 +11,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 final class Icecast
 {
-    public function __construct(
-        private Environment $environment
-    ) {
-    }
-
     /**
      * @param AdminRelayDto[] $stations
      */
@@ -30,10 +25,10 @@ final class Icecast
     public function writeForStation(
         AdminRelayDto $relay
     ): void {
-        $baseUrl = $this->environment->getParentBaseUrl();
-        $relayBaseUrl = $this->environment->getRelayBaseUrl();
+        $baseUrl = Environment::getParentBaseUrl();
+        $relayBaseUrl = Environment::getRelayBaseUrl();
 
-        $configPath = self::getConfigPathForStation($this->environment, $relay);
+        $configPath = self::getConfigPathForStation($relay);
         $baseDir = dirname($configPath);
 
         $relayUri = new Uri($relayBaseUrl);
@@ -161,10 +156,8 @@ final class Icecast
         return str_shuffle($password);
     }
 
-    public static function getConfigPathForStation(
-        Environment $environment,
-        AdminRelayDto $relay
-    ): string {
-        return $environment->getStationsDirectory() . '/' . $relay->getShortcode() . '.xml';
+    public static function getConfigPathForStation(AdminRelayDto $relay): string
+    {
+        return Environment::getStationsDirectory() . '/' . $relay->getShortcode() . '.xml';
     }
 }

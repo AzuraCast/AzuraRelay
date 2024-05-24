@@ -22,3 +22,8 @@ install:
 
 	docker-compose build
 
+bash:
+	docker-compose exec --user=app relay bash
+
+bash-root:
+	docker-compose exec relay bash

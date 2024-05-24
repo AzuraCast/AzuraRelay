@@ -23,7 +23,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class UpdateCommand extends Command
 {
     public function __construct(
-        private readonly Environment $environment,
         private readonly Client $api,
         private readonly Supervisor $supervisor,
         private readonly Icecast $icecast,
@@ -47,8 +46,8 @@ final class UpdateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $baseUrl = $this->environment->getParentBaseUrl();
-        $apiKey = $this->environment->getParentApiKey();
+        $baseUrl = Environment::getParentBaseUrl();
+        $apiKey = Environment::getParentApiKey();
 
         if (empty($baseUrl) || empty($apiKey)) {
             $io->error(
@@ -57,7 +56,7 @@ final class UpdateCommand extends Command
             return 1;
         }
 
-        $relayBaseUrl = $this->environment->getRelayBaseUrl();
+        $relayBaseUrl = Environment::getRelayBaseUrl();
 
         if (empty($relayBaseUrl)) {
             $io->error(
@@ -69,7 +68,7 @@ final class UpdateCommand extends Command
         $relays = $this->api->admin()->relays()->list();
 
         // Write relay information to JSON file.
-        $relayInfoPath = $this->environment->getStationsDirectory() . '/stations.json';
+        $relayInfoPath = Environment::getStationsDirectory() . '/stations.json';
         file_put_contents($relayInfoPath, json_encode($relays, JSON_THROW_ON_ERROR));
 
         // Write and reload configs

@@ -2,7 +2,6 @@ services:
   relay:
     build:
       context: .
-    environment:
-      APPLICATION_ENV: development
+      target: development
     volumes:
-      - $PWD/www:/var/app/www
+      - $PWD:/var/app/www

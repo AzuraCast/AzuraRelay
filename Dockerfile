@@ -25,7 +25,7 @@ RUN go install github.com/aptible/supercronic@latest
 #
 # Main Image
 #
-FROM php:8.3-cli-alpine3.20
+FROM php:8.3-cli-alpine3.20 AS base
 
 ENV TZ=UTC
 
@@ -63,40 +63,67 @@ COPY ./build/nginx/azurarelay.conf /etc/nginx/sites-enabled/default.conf
 
 RUN chmod a+x /usr/local/bin/*
 
-VOLUME ["/var/app/acme"]
+EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
+    8100 8110 8120 8130 8140 8150 8160 8170 8180 8190 \
+    8200 8210 8220 8230 8240 8250 8260 8270 8280 8290 \
+    8300 8310 8320 8330 8340 8350 8360 8370 8380 8390 \
+    8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
 
 #
-# START Operations as `app` user
+# Development Build
 #
-USER app
+FROM base AS development
 
-# Clone repo and set up repo
+COPY ./build/dev/entrypoint.sh /var/app/entrypoint.sh
+RUN chmod a+x /var/app/entrypoint.sh
+
+RUN apk add --no-cache shadow
+
 WORKDIR /var/app/www
 
-COPY --chown=app:app ./www/composer.json ./www/composer.lock ./
-RUN composer install  \
-    --ignore-platform-reqs \
-    --no-ansi \
-    --no-autoloader \
-    --no-interaction \
-    --no-scripts
+ENV APPLICATION_ENV=development
 
-# We need to copy our whole application so that we can generate the autoload file inside the vendor folder.
-COPY --chown=app:app ./www .
+ENTRYPOINT ["/var/app/entrypoint.sh"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
 
-RUN composer dump-autoload --optimize --classmap-authoritative
+# 
+# Testing Build
+#
+FROM base AS testing
+
+COPY ./build/testing/entrypoint.sh /var/app/entrypoint.sh
+RUN chmod a+x /var/app/entrypoint.sh
+
+ENV APPLICATION_ENV=testing
+
+WORKDIR /var/app/www
+COPY --chown=app:app . .
+
+ENTRYPOINT ["/var/app/entrypoint.sh"]
+CMD ["app_ci"]
 
 #
-# END Operations as `app` user
+# Production Build
 #
+FROM base AS production
+
+COPY ./build/prod/entrypoint.sh /var/app/entrypoint.sh
+RUN chmod a+x /var/app/entrypoint.sh
+
+VOLUME ["/var/app/acme"]
+
+USER app
+
+WORKDIR /var/app/www
+COPY --chown=app:app . .
+
+RUN composer install --no-dev --no-ansi --no-autoloader --no-interaction \
+    && composer dump-autoload --optimize --classmap-authoritative \
+    && composer clear-cache
 
 USER root
 
-EXPOSE 80 8000 8010 8020 8030 8040 8050 8060 8070 8090 \
-        8100 8110 8120 8130 8140 8150 8160 8170 8180 8190 \
-        8200 8210 8220 8230 8240 8250 8260 8270 8280 8290 \
-        8300 8310 8320 8330 8340 8350 8360 8370 8380 8390 \
-        8400 8410 8420 8430 8440 8450 8460 8470 8480 8490
+ENV APPLICATION_ENV=production
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/var/app/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

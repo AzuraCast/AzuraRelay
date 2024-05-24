@@ -2,7 +2,8 @@
 <ruleset name="AzuraCast">
     <description>The AzuraCast PHP coding standard.</description>
 
-    <file>src</file>
+    <file>backend</file>
+    <file>web</file>
 
     <arg name="basepath" value="."/>
     <arg name="extensions" value="php"/>

@@ -14,12 +14,11 @@ use Symfony\Component\Filesystem\Filesystem;
 
 final class Acme
 {
-    public const LETSENCRYPT_PROD = 'https://acme-v02.api.letsencrypt.org/directory';
-    public const LETSENCRYPT_DEV = 'https://acme-staging-v02.api.letsencrypt.org/directory';
-    public const THRESHOLD_DAYS = 30;
+    public const string LETSENCRYPT_PROD = 'https://acme-v02.api.letsencrypt.org/directory';
+    public const string LETSENCRYPT_DEV = 'https://acme-staging-v02.api.letsencrypt.org/directory';
+    public const int THRESHOLD_DAYS = 30;
 
     public function __construct(
-        private readonly Environment $environment,
         private readonly Logger $logger,
         private readonly Nginx $nginx
     ) {
@@ -32,7 +31,7 @@ final class Acme
         $fs = new Filesystem();
 
         // Build ACME Cert class.
-        $directoryUrl = $this->environment->isProduction() ? self::LETSENCRYPT_PROD : self::LETSENCRYPT_DEV;
+        $directoryUrl = Environment::isProduction() ? self::LETSENCRYPT_PROD : self::LETSENCRYPT_DEV;
 
         $this->logger->debug(
             sprintf('ACME: Using directory URL: %s', $directoryUrl)
@@ -110,9 +109,9 @@ final class Acme
 
         // Symlink to the shared SSL cert.
         $fs->remove([
-                        $acmeDir . '/ssl.crt',
-                        $acmeDir . '/ssl.key',
-                    ]);
+            $acmeDir . '/ssl.crt',
+            $acmeDir . '/ssl.key',
+        ]);
 
         $fs->symlink($acmeDir . '/acme.crt', $acmeDir . '/ssl.crt');
         $fs->symlink($acmeDir . '/acme.key', $acmeDir . '/ssl.key');
@@ -138,7 +137,7 @@ final class Acme
 
     public static function getAcmeDirectory(): string
     {
-        return Environment::getInstance()->getParentDirectory() . '/acme';
+        return Environment::getParentDirectory() . '/acme';
     }
 
     public static function getCertificatePaths(): array
