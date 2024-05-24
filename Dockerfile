@@ -1,18 +1,7 @@
 #
-# Icecast build step
+# Icecast-KH with AzuraCast customizations build step
 #
-FROM alpine:3.20 AS icecast
-
-RUN apk add --no-cache curl git ca-certificates \
-    alpine-sdk libxml2-dev libxslt-dev libvorbis-dev openssl-dev curl-dev
-
-WORKDIR /tmp/install_icecast
-
-RUN curl -fsSL -o icecast.tar.gz https://github.com/AzuraCast/icecast-kh-ac/archive/refs/tags/2.4.0-kh15-ac2.tar.gz \
-    && tar -xzvf icecast.tar.gz --strip-components=1 \
-    && ./configure \
-    && make \
-    && make install
+FROM ghcr.io/azuracast/icecast-kh-ac:2024-05-24-alpine AS icecast
 
 #
 # Supercronic
