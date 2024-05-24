@@ -1,10 +1,10 @@
 #
 # Icecast build step
 #
-FROM alpine:3.16 AS icecast
+FROM alpine:3.20 AS icecast
 
 RUN apk add --no-cache curl git ca-certificates \
-    alpine-sdk libxml2-dev libxslt-dev libvorbis-dev libressl-dev curl-dev
+    alpine-sdk libxml2-dev libxslt-dev libvorbis-dev openssl-dev curl-dev
 
 WORKDIR /tmp/install_icecast
 
@@ -18,14 +18,14 @@ RUN curl -fsSL -o icecast.tar.gz https://github.com/AzuraCast/icecast-kh-ac/arch
 # Supercronic
 #
 
-FROM golang:1-alpine3.16 AS supercronic
+FROM golang:1-alpine3.20 AS supercronic
 
 RUN go install github.com/aptible/supercronic@latest
 
 #
 # Main Image
 #
-FROM php:8.1-cli-alpine3.16
+FROM php:8.3-cli-alpine3.20
 
 ENV TZ=UTC
 
