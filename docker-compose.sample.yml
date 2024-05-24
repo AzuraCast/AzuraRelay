@@ -1,7 +1,7 @@
 services:
   relay:
     container_name: azurarelay_relay
-    image: "azuracast.docker.scarf.sh/azuracast/relay:${AZURARELAY_VERSION:-latest}"
+    image: "ghcr.io/azuracast/relay:${AZURARELAY_VERSION:-latest}"
     env_file: azurarelay.env
     environment:
       LETSENCRYPT_HOST : ${LETSENCRYPT_HOST:-}
