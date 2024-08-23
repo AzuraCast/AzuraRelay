@@ -53,6 +53,8 @@ final class Nginx
             proxy_connect_timeout     60;
 
             proxy_set_header Host localhost:{$port};
+
+            set \$args \$args&_ic2=1;
             proxy_pass http://127.0.0.1:{$port}/\$2?\$args;
         }
         NGINX;
