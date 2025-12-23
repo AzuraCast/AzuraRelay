@@ -7,14 +7,14 @@ FROM ghcr.io/azuracast/icecast-kh-ac:2024-05-24-alpine AS icecast
 # Supercronic
 #
 
-FROM golang:1-alpine3.20 AS supercronic
+FROM golang:1-alpine3.22 AS supercronic
 
 RUN go install github.com/aptible/supercronic@latest
 
 #
 # Main Image
 #
-FROM php:8.3-cli-alpine3.20 AS base
+FROM php:8.5-cli-alpine3.22 AS base
 
 ENV TZ=UTC
 
