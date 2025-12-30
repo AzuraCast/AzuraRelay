@@ -1,7 +1,7 @@
 #
-# Icecast-KH with AzuraCast customizations build step
+# Icecast with AzuraCast customizations build step
 #
-FROM ghcr.io/azuracast/icecast-kh-ac:2024-05-24-alpine AS icecast
+FROM ghcr.io/azuracast/icecast-ac:2025-12-29-alpine AS icecast
 
 #
 # Supercronic
