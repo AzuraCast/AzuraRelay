@@ -47,7 +47,7 @@ class AppFactory
 
         error_reporting(
             Environment::isProduction()
-                ? E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED
+                ? E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED
                 : E_ALL & ~E_NOTICE
         );
 
