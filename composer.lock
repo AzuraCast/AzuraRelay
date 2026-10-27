@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b4ab7d5033abb4a81295ab5733572456",
+    "content-hash": "2dbe1b445b4e889339dc3e6f82ee9806",
     "packages": [
         {
             "name": "azuracast/nowplaying",
@@ -4052,7 +4052,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.3",
+        "php": "^8.5",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-xmlwriter": "*"
