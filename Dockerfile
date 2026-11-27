@@ -14,7 +14,7 @@ RUN go install github.com/aptible/supercronic@latest
 #
 # Main Image
 #
-FROM php:8.5.12-cli-alpine3.24 AS base
+FROM php:8.5.13-cli-alpine3.24 AS base
 
 ENV TZ=UTC
 
